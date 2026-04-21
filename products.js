@@ -10,23 +10,125 @@ function closeSidebar() {
 
 
 function openForm() {
-    var form = document.getElementById("product-form")
-    form.style.display = (form.style.display === "block") ? "none" : "block";
+    resetFormState();
+    document.getElementById("product-form").style.display = "block";
 }
 
 function closeForm() {
+    resetFormState();
     document.getElementById("product-form").style.display = "none";
 }
 
 
 let products = [];
 
+function resetFormState() {
+  document.getElementById("product-form").reset();
+  document.getElementById("submitBtn").textContent = "Add";
+}
+
+function getValidatedProductFormData() {
+  const form = document.getElementById("product-form");
+
+  if (!form.checkValidity()) {
+    showFeedback("Please complete the required product fields before submitting.", "error");
+    form.reportValidity();
+    return null;
+  }
+
+  const product = {
+    prodID: document.getElementById("product-id").value.trim(),
+    prodName: document.getElementById("product-name").value.trim(),
+    prodDesc: document.getElementById("product-desc").value.trim(),
+    prodCat: document.getElementById("product-cat").value.trim(),
+    prodPrice: Number(document.getElementById("product-price").value),
+    prodSold: Number(document.getElementById("product-sold").value),
+  };
+
+  if (!product.prodID || !product.prodName || !product.prodDesc || !product.prodCat) {
+    showFeedback("Please complete the required product fields before submitting.", "error");
+    return null;
+  }
+
+  if (!Number.isFinite(product.prodPrice) || product.prodPrice < 0) {
+    showFeedback("Product price must be a valid non-negative number.", "error");
+    return null;
+  }
+
+  if (!Number.isInteger(product.prodSold) || product.prodSold < 0) {
+    showFeedback("Units sold must be a valid non-negative whole number.", "error");
+    return null;
+  }
+
+  return product;
+}
+
+function createCell(value) {
+  const cell = document.createElement("td");
+  cell.textContent = value;
+  return cell;
+}
+
+function createActionButton(title, iconClassName, onClick) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.title = title;
+  button.setAttribute("aria-label", title);
+  button.addEventListener("click", onClick);
+
+  const icon = document.createElement("i");
+  icon.className = iconClassName;
+  icon.setAttribute("aria-hidden", "true");
+  button.appendChild(icon);
+
+  return button;
+}
+
+function showFeedback(message, type = "success") {
+  const feedbackElement = document.getElementById("page-feedback");
+  feedbackElement.textContent = message;
+  feedbackElement.className = `page-feedback is-${type}`;
+}
+
+function clearFeedback() {
+  const feedbackElement = document.getElementById("page-feedback");
+  feedbackElement.textContent = "";
+  feedbackElement.className = "page-feedback";
+}
+
+function persistFallback(key, fallbackData) {
+  try {
+    localStorage.setItem(key, JSON.stringify(fallbackData));
+  } catch (error) {
+    console.warn(`Unable to persist fallback data for ${key}.`, error);
+  }
+
+  return fallbackData;
+}
+
+function getStoredArray(key, fallbackData) {
+  try {
+    const storedValue = localStorage.getItem(key);
+
+    if (!storedValue) {
+      return persistFallback(key, fallbackData);
+    }
+
+    const parsedValue = JSON.parse(storedValue);
+
+    if (!Array.isArray(parsedValue)) {
+      throw new Error(`Invalid data format for ${key}`);
+    }
+
+    return parsedValue;
+  } catch (error) {
+    console.warn(`Unable to parse stored data for ${key}. Resetting to fallback data.`, error);
+    return persistFallback(key, fallbackData);
+  }
+}
+
 function init() {
-  const storedProducts = localStorage.getItem("bizTrackProducts");
-  if (storedProducts) {
-      products = JSON.parse(storedProducts);
-  } else {
-      products = [
+  products = getStoredArray("bizTrackProducts", [
         {
           prodID: "PD001",
           prodName: "Baseball caps",
@@ -67,10 +169,7 @@ function init() {
           prodPrice: 17.00,
           prodSold: 40
         },
-      ];
-
-      localStorage.setItem("bizTrackProducts", JSON.stringify(products));
-    }
+      ]);
 
     renderProducts(products);
 }
@@ -87,33 +186,25 @@ function addOrUpdate(event) {
 
 function newProduct(event) {
   event.preventDefault();
-  const prodID = document.getElementById("product-id").value;
-  const prodName = document.getElementById("product-name").value;
-  const prodDesc = document.getElementById("product-desc").value;
-  const prodCat = document.getElementById("product-cat").value;
-  const prodPrice = parseFloat(document.getElementById("product-price").value);
-  const prodSold = parseInt(document.getElementById("product-sold").value);
+  clearFeedback();
+  const product = getValidatedProductFormData();
 
-  if (isDuplicateID(prodID, null)) {
-    alert("Product ID already exists. Please use a unique ID.");
+  if (!product) {
     return;
   }
 
-  const product = {
-    prodID,
-    prodName,
-    prodDesc,
-    prodCat,
-    prodPrice,
-    prodSold,
-  };
+  if (isDuplicateID(product.prodID, null)) {
+    showFeedback("Product ID already exists. Please use a unique ID.", "error");
+    return;
+  }
 
   products.push(product);
 
   renderProducts(products);
   localStorage.setItem("bizTrackProducts", JSON.stringify(products));
 
-  document.getElementById("product-form").reset();
+  resetFormState();
+  showFeedback(`Product ${product.prodID} added successfully.`);
 }
 
 
@@ -134,18 +225,27 @@ function renderProducts(products) {
       prodRow.dataset.prodPrice = product.prodPrice;
       prodRow.dataset.prodSold = product.prodSold;
 
-      prodRow.innerHTML = `
-          <td>${product.prodID}</td>
-          <td>${product.prodName}</td>
-          <td>${product.prodDesc}</td>
-          <td>${product.prodCat}</td>
-          <td>$${product.prodPrice.toFixed(2)}</td>
-          <td>${product.prodSold}</td>
-          <td class="action">
-            <i title="Edit" onclick="editRow('${product.prodID}')" class="edit-icon fa-solid fa-pen-to-square"></i>
-            <i onclick="deleteProduct('${product.prodID}')" class="delete-icon fas fa-trash-alt"></i>
-          </td>
-      `;
+      prodRow.appendChild(createCell(product.prodID));
+      prodRow.appendChild(createCell(product.prodName));
+      prodRow.appendChild(createCell(product.prodDesc));
+      prodRow.appendChild(createCell(product.prodCat));
+      prodRow.appendChild(createCell(`$${product.prodPrice.toFixed(2)}`));
+      prodRow.appendChild(createCell(product.prodSold));
+
+      const actionCell = document.createElement("td");
+      actionCell.className = "action";
+
+      const editButton = createActionButton("Edit", "edit-icon fa-solid fa-pen-to-square", () => {
+        editRow(product.prodID);
+      });
+      const deleteButton = createActionButton("Delete", "delete-icon fas fa-trash-alt", () => {
+        deleteProduct(product.prodID);
+      });
+
+      actionCell.appendChild(editButton);
+      actionCell.appendChild(deleteButton);
+      prodRow.appendChild(actionCell);
+
       prodTableBody.appendChild(prodRow);
   });
 }
@@ -174,6 +274,7 @@ function deleteProduct(prodID) {
       localStorage.setItem("bizTrackProducts", JSON.stringify(products));
 
       renderProducts(products);
+      showFeedback(`Product ${prodID} deleted successfully.`);
   }
 }
 
@@ -181,17 +282,14 @@ function updateProduct(prodID) {
     const indexToUpdate = products.findIndex(product => product.prodID === prodID);
 
     if (indexToUpdate !== -1) {
-        const updatedProduct = {
-            prodID: document.getElementById("product-id").value,
-            prodName: document.getElementById("product-name").value,
-            prodDesc: document.getElementById("product-desc").value,
-            prodCat: document.getElementById("product-cat").value,
-            prodPrice: parseFloat(document.getElementById("product-price").value),
-            prodSold: parseInt(document.getElementById("product-sold").value),
-        };
+        const updatedProduct = getValidatedProductFormData();
+
+        if (!updatedProduct) {
+            return;
+        }
 
         if (isDuplicateID(updatedProduct.prodID, prodID)) {
-            alert("Product ID already exists. Please use a unique ID.");
+            showFeedback("Product ID already exists. Please use a unique ID.", "error");
             return;
         }
 
@@ -201,8 +299,8 @@ function updateProduct(prodID) {
 
         renderProducts(products);
 
-        document.getElementById("product-form").reset();
-        document.getElementById("submitBtn").textContent = "Add";
+        resetFormState();
+        showFeedback(`Product ${updatedProduct.prodID} updated successfully.`);
     }
 }
 
@@ -238,15 +336,34 @@ document.getElementById("searchInput").addEventListener("keyup", function(event)
     }
 });
 
+document.getElementById("searchInput").addEventListener("input", performSearch);
+document.getElementById("searchInput").addEventListener("search", performSearch);
+
 
 function performSearch() {
-    const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    const searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
     const rows = document.querySelectorAll(".product-row");
+    let visibleCount = 0;
 
     rows.forEach(row => {
         const visible = row.innerText.toLowerCase().includes(searchInput);
         row.style.display = visible ? "table-row" : "none";
+        if (visible) {
+            visibleCount += 1;
+        }
     });
+
+    if (!searchInput) {
+        clearFeedback();
+        return;
+    }
+
+    if (visibleCount === 0) {
+        showFeedback("No matching products found.", "info");
+        return;
+    }
+
+    clearFeedback();
 }
 
 
@@ -274,11 +391,20 @@ function exportToCSV() {
   link.click();
 
   document.body.removeChild(link);
+  showFeedback("Products exported to CSV.");
+}
+
+function escapeCSVValue(value) {
+  const stringValue = String(value ?? "");
+  const safeValue = /^[\t\r ]*[=+\-@]/.test(stringValue) ? `'${stringValue}` : stringValue;
+  const escapedQuotes = safeValue.replace(/"/g, '""');
+
+  return /[",\n\r]/.test(escapedQuotes) ? `"${escapedQuotes}"` : escapedQuotes;
 }
 
 function generateCSV(data) {
-  const headers = Object.keys(data[0]).join(',');
-  const rows = data.map(order => Object.values(order).join(','));
+  const headers = Object.keys(data[0]).map(escapeCSVValue).join(',');
+  const rows = data.map(order => Object.values(order).map(escapeCSVValue).join(','));
 
   return `${headers}\n${rows.join('\n')}`;
 }

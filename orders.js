@@ -10,22 +10,142 @@ function closeSidebar() {
 
 
 function openForm() {
-    var form = document.getElementById("order-form")
-    form.style.display = (form.style.display === "block") ? "none" : "block";
+    resetFormState();
+    document.getElementById("order-form").style.display = "block";
 }
 
 function closeForm() {
+    resetFormState();
     document.getElementById("order-form").style.display = "none";
 }
 
 let orders = [];
 
+function resetFormState() {
+    document.getElementById("order-form").reset();
+    document.getElementById("submitBtn").textContent = "Add";
+}
+
+function getValidatedOrderFormData() {
+    const form = document.getElementById("order-form");
+
+    if (!form.checkValidity()) {
+        showFeedback("Please complete the required order fields before submitting.", "error");
+        form.reportValidity();
+        return null;
+    }
+
+    const itemPrice = Number(document.getElementById("item-price").value);
+    const qtyBought = Number(document.getElementById("qty-bought").value);
+    const shipping = Number(document.getElementById("shipping").value);
+    const taxes = Number(document.getElementById("taxes").value);
+
+    const order = {
+        orderID: document.getElementById("order-id").value.trim(),
+        orderDate: document.getElementById("order-date").value,
+        itemName: document.getElementById("item-name").value.trim(),
+        itemPrice,
+        qtyBought,
+        shipping,
+        taxes,
+        orderStatus: document.getElementById("order-status").value.trim(),
+    };
+
+    if (!order.orderID || !order.orderDate || !order.itemName || !order.orderStatus) {
+        showFeedback("Please complete the required order fields before submitting.", "error");
+        return null;
+    }
+
+    if (!Number.isFinite(itemPrice) || itemPrice < 0) {
+        showFeedback("Item price must be a valid non-negative number.", "error");
+        return null;
+    }
+
+    if (!Number.isInteger(qtyBought) || qtyBought <= 0) {
+        showFeedback("Quantity bought must be a valid whole number greater than zero.", "error");
+        return null;
+    }
+
+    if (!Number.isFinite(shipping) || shipping < 0 || !Number.isFinite(taxes) || taxes < 0) {
+        showFeedback("Shipping and taxes must be valid non-negative numbers.", "error");
+        return null;
+    }
+
+    return {
+        ...order,
+        orderTotal: ((itemPrice * qtyBought) + shipping + taxes),
+    };
+}
+
+function createCell(value, className = "") {
+    const cell = document.createElement("td");
+    if (className) {
+        cell.className = className;
+    }
+    cell.textContent = value;
+    return cell;
+}
+
+function createActionButton(title, iconClassName, onClick) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.title = title;
+    button.setAttribute("aria-label", title);
+    button.addEventListener("click", onClick);
+
+    const icon = document.createElement("i");
+    icon.className = iconClassName;
+    icon.setAttribute("aria-hidden", "true");
+    button.appendChild(icon);
+
+    return button;
+}
+
+function showFeedback(message, type = "success") {
+    const feedbackElement = document.getElementById("page-feedback");
+    feedbackElement.textContent = message;
+    feedbackElement.className = `page-feedback is-${type}`;
+}
+
+function clearFeedback() {
+    const feedbackElement = document.getElementById("page-feedback");
+    feedbackElement.textContent = "";
+    feedbackElement.className = "page-feedback";
+}
+
+function persistFallback(key, fallbackData) {
+    try {
+        localStorage.setItem(key, JSON.stringify(fallbackData));
+    } catch (error) {
+        console.warn(`Unable to persist fallback data for ${key}.`, error);
+    }
+
+    return fallbackData;
+}
+
+function getStoredArray(key, fallbackData) {
+    try {
+        const storedValue = localStorage.getItem(key);
+
+        if (!storedValue) {
+            return persistFallback(key, fallbackData);
+        }
+
+        const parsedValue = JSON.parse(storedValue);
+
+        if (!Array.isArray(parsedValue)) {
+            throw new Error(`Invalid data format for ${key}`);
+        }
+
+        return parsedValue;
+    } catch (error) {
+        console.warn(`Unable to parse stored data for ${key}. Resetting to fallback data.`, error);
+        return persistFallback(key, fallbackData);
+    }
+}
+
 window.onload = function () {
-    const storedOrders = localStorage.getItem("bizTrackOrders");
-    if (storedOrders) {
-        orders = JSON.parse(storedOrders);
-    } else {
-        orders = [
+    orders = getStoredArray("bizTrackOrders", [
         {
             orderID: "1001",
             orderDate: "2024-01-05",
@@ -81,10 +201,7 @@ window.onload = function () {
             orderTotal: 37.90,
             orderStatus: "Pending"
         },
-        ];
-
-        localStorage.setItem("bizTrackOrders", JSON.stringify(orders));
-    }
+        ]);
 
     renderOrders(orders);
 }
@@ -102,39 +219,25 @@ function addOrUpdate(event) {
 
 function newOrder(event) {
   event.preventDefault();
-  const orderID = document.getElementById("order-id").value;
-  const orderDate = document.getElementById("order-date").value;
-  const itemName = document.getElementById("item-name").value;
-  const itemPrice = parseFloat(document.getElementById("item-price").value);
-  const qtyBought = parseInt(document.getElementById("qty-bought").value);
-  const shipping = parseFloat(document.getElementById("shipping").value);
-  const taxes = parseFloat(document.getElementById("taxes").value);
-  const orderTotal = ((itemPrice * qtyBought) + shipping + taxes);
-  const orderStatus = document.getElementById("order-status").value;
+  clearFeedback();
+  const order = getValidatedOrderFormData();
 
-  if (isDuplicateID(orderID, null)) {
-    alert("Order ID already exists. Please use a unique ID.");
+  if (!order) {
     return;
   }
 
-  const order = {
-    orderID,
-    orderDate,
-    itemName,
-    itemPrice,
-    qtyBought,
-    shipping,
-    taxes,
-    orderTotal,
-    orderStatus,
-  };
+  if (isDuplicateID(order.orderID, null)) {
+    showFeedback("Order ID already exists. Please use a unique ID.", "error");
+    return;
+  }
 
   orders.push(order);
 
   renderOrders(orders);
   localStorage.setItem("bizTrackOrders", JSON.stringify(orders));
 
-  document.getElementById("order-form").reset();
+  resetFormState();
+  showFeedback(`Order ${order.orderID} added successfully.`);
 }
 
 
@@ -169,23 +272,38 @@ function renderOrders(orders) {
       const formattedTaxes = typeof order.taxes === 'number' ? `$${order.taxes.toFixed(2)}` : '';
       const formattedTotal = typeof order.orderTotal === 'number' ? `$${order.orderTotal.toFixed(2)}` : '';
 
-      orderRow.innerHTML = `
-        <td>${order.orderID}</td>
-        <td>${order.orderDate}</td>
-        <td>${order.itemName}</td>
-        <td>${formattedPrice}</td>
-        <td>${order.qtyBought}</td>
-        <td>${formattedShipping}</td>
-        <td>${formattedTaxes}</td>
-        <td class="order-total">${formattedTotal}</td>
-        <td>
-            <div class="status ${statusMap[order.orderStatus]}"><span>${order.orderStatus}</span></div>
-        </td>
-        <td class="action">
-            <i title="Edit" onclick="editRow('${order.orderID}')" class="edit-icon fa-solid fa-pen-to-square"></i>
-            <i onclick="deleteOrder('${order.orderID}')" class="delete-icon fas fa-trash-alt"></i>
-          </td> 
-      `;
+      orderRow.appendChild(createCell(order.orderID));
+      orderRow.appendChild(createCell(order.orderDate));
+      orderRow.appendChild(createCell(order.itemName));
+      orderRow.appendChild(createCell(formattedPrice));
+      orderRow.appendChild(createCell(order.qtyBought));
+      orderRow.appendChild(createCell(formattedShipping));
+      orderRow.appendChild(createCell(formattedTaxes));
+      orderRow.appendChild(createCell(formattedTotal, "order-total"));
+
+      const statusCell = document.createElement("td");
+      const statusElement = document.createElement("div");
+      statusElement.className = `status ${statusMap[order.orderStatus]}`;
+      const statusLabel = document.createElement("span");
+      statusLabel.textContent = order.orderStatus;
+      statusElement.appendChild(statusLabel);
+      statusCell.appendChild(statusElement);
+      orderRow.appendChild(statusCell);
+
+      const actionCell = document.createElement("td");
+      actionCell.className = "action";
+
+      const editButton = createActionButton("Edit", "edit-icon fa-solid fa-pen-to-square", () => {
+        editRow(order.orderID);
+      });
+      const deleteButton = createActionButton("Delete", "delete-icon fas fa-trash-alt", () => {
+        deleteOrder(order.orderID);
+      });
+
+      actionCell.appendChild(editButton);
+      actionCell.appendChild(deleteButton);
+      orderRow.appendChild(actionCell);
+
       orderTableBody.appendChild(orderRow);
   });
   displayRevenue();
@@ -229,6 +347,7 @@ function deleteOrder(orderID) {
       localStorage.setItem("bizTrackOrders", JSON.stringify(orders));
 
       renderOrders(orders);
+      showFeedback(`Order ${orderID} deleted successfully.`);
   }
 }
 
@@ -236,24 +355,14 @@ function updateOrder(orderID) {
     const indexToUpdate = orders.findIndex(order => order.orderID === orderID);
 
     if (indexToUpdate !== -1) {
-        const itemPrice = parseFloat(document.getElementById("item-price").value);
-        const qtyBought = parseInt(document.getElementById("qty-bought").value);
-        const shipping = parseFloat(document.getElementById("shipping").value);
-        const taxes = parseFloat(document.getElementById("taxes").value);
-        const updatedOrder = {
-            orderID: document.getElementById("order-id").value,
-            orderDate: document.getElementById("order-date").value,
-            itemName: document.getElementById("item-name").value,
-            itemPrice: itemPrice,
-            qtyBought: qtyBought,
-            shipping: shipping,
-            taxes: taxes,
-            orderTotal: ((itemPrice * qtyBought) + shipping + taxes),
-            orderStatus: document.getElementById("order-status").value,
-        };
+        const updatedOrder = getValidatedOrderFormData();
+
+        if (!updatedOrder) {
+            return;
+        }
 
         if (isDuplicateID(updatedOrder.orderID, orderID)) {
-            alert("Order ID already exists. Please use a unique ID.");
+            showFeedback("Order ID already exists. Please use a unique ID.", "error");
             return;
         }
 
@@ -263,8 +372,8 @@ function updateOrder(orderID) {
 
         renderOrders(orders);
 
-        document.getElementById("order-form").reset();
-        document.getElementById("submitBtn").textContent = "Add";
+        resetFormState();
+        showFeedback(`Order ${updatedOrder.orderID} updated successfully.`);
     }
 }
 
@@ -301,15 +410,34 @@ document.getElementById("searchInput").addEventListener("keyup", function(event)
     }
 });
 
+document.getElementById("searchInput").addEventListener("input", performSearch);
+document.getElementById("searchInput").addEventListener("search", performSearch);
+
 
 function performSearch() {
-    const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    const searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
     const rows = document.querySelectorAll(".order-row");
+    let visibleCount = 0;
 
     rows.forEach(row => {
         const visible = row.innerText.toLowerCase().includes(searchInput);
         row.style.display = visible ? "table-row" : "none";
+        if (visible) {
+            visibleCount += 1;
+        }
     });
+
+    if (!searchInput) {
+        clearFeedback();
+        return;
+    }
+
+    if (visibleCount === 0) {
+        showFeedback("No matching orders found.", "info");
+        return;
+    }
+
+    clearFeedback();
 }
 
 
@@ -340,11 +468,20 @@ function exportToCSV() {
     link.click();
   
     document.body.removeChild(link);
+    showFeedback("Orders exported to CSV.");
 }
   
+function escapeCSVValue(value) {
+    const stringValue = String(value ?? "");
+    const safeValue = /^[\t\r ]*[=+\-@]/.test(stringValue) ? `'${stringValue}` : stringValue;
+    const escapedQuotes = safeValue.replace(/"/g, '""');
+
+    return /[",\n\r]/.test(escapedQuotes) ? `"${escapedQuotes}"` : escapedQuotes;
+}
+
 function generateCSV(data) {
-    const headers = Object.keys(data[0]).join(',');
-    const rows = data.map(order => Object.values(order).join(','));
+    const headers = Object.keys(data[0]).map(escapeCSVValue).join(',');
+    const rows = data.map(order => Object.values(order).map(escapeCSVValue).join(','));
 
     return `${headers}\n${rows.join('\n')}`;
 }

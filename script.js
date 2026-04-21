@@ -9,9 +9,39 @@ function closeSidebar() {
   document.getElementById('sidebar').style.display = 'none';
 }
 
+function persistFallback(key, fallbackData) {
+  try {
+    localStorage.setItem(key, JSON.stringify(fallbackData));
+  } catch (error) {
+    console.warn(`Unable to persist fallback data for ${key}.`, error);
+  }
+
+  return fallbackData;
+}
+
+function getStoredArray(key, fallbackData) {
+  try {
+    const storedValue = localStorage.getItem(key);
+
+    if (!storedValue) {
+      return persistFallback(key, fallbackData);
+    }
+
+    const parsedValue = JSON.parse(storedValue);
+
+    if (!Array.isArray(parsedValue)) {
+      throw new Error(`Invalid data format for ${key}`);
+    }
+
+    return parsedValue;
+  } catch (error) {
+    console.warn(`Unable to parse stored data for ${key}. Resetting to fallback data.`, error);
+    return persistFallback(key, fallbackData);
+  }
+}
 
 window.onload = function () {
-  const expenses = JSON.parse(localStorage.getItem('bizTrackTransactions')) || [
+  const expenses = getStoredArray('bizTrackTransactions', [
     {
       trID: 1,
       trDate: "2024-01-05",
@@ -47,8 +77,8 @@ window.onload = function () {
       trAmount: 20.00,
       trNotes: "Pizza"
   },
-  ];
-  const revenues = JSON.parse(localStorage.getItem('bizTrackOrders')) || [
+  ]);
+  const revenues = getStoredArray('bizTrackOrders', [
     {
       orderID: "1001",
       orderDate: "2024-01-05",
@@ -104,7 +134,7 @@ window.onload = function () {
       orderTotal: 37.90,
       orderStatus: "Pending"
   },
-  ];
+  ]);
 
   const totalExpenses = calculateExpTotal(expenses);
   const totalRevenues = calculateRevTotal(revenues);
@@ -167,7 +197,7 @@ function calculateCategorySales(products) {
 
 
 function initializeChart() {
-  const items = JSON.parse(localStorage.getItem('bizTrackProducts')) || [
+  const items = getStoredArray('bizTrackProducts', [
     {
       prodID: "PD001",
       prodName: "Baseball caps",
@@ -208,7 +238,7 @@ function initializeChart() {
       prodPrice: 17.00,
       prodSold: 40
     },
-  ];
+  ]);
   const categorySalesData = calculateCategorySales(items);
 
   const sortedCategorySales = Object.entries(categorySalesData)
@@ -293,7 +323,7 @@ function initializeChart() {
     return categoryExpenses;
   }
 
-  const expItems = JSON.parse(localStorage.getItem('bizTrackTransactions')) || [
+  const expItems = getStoredArray('bizTrackTransactions', [
     {
       trID: 1,
       trDate: "2024-01-05",
@@ -329,7 +359,7 @@ function initializeChart() {
       trAmount: 20.00,
       trNotes: "Pizza"
   },
-  ];
+  ]);
   const categoryExpData = calculateCategoryExp(expItems);
 
   const donutChartOptions = {

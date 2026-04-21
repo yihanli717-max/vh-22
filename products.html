@@ -19,7 +19,9 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <i class="fa-solid fa-xmark" title="Close" onclick="closeSidebar()"></i>
+            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+                <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
+            </button>
         </div>
         <ul class="menu">
             <li>
@@ -63,9 +65,9 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <div class="menu-icon" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
-            </div>
+            </button>
             <div class="header-title">
                 <!-- <span>Primary</span> -->
                 <h2>Products</h2>
@@ -87,6 +89,7 @@
                     <button class="download-button" onclick="exportToCSV()">Download CSV</button>
                 </div>
             </div>
+            <p id="page-feedback" class="page-feedback" role="status" aria-live="polite"></p>
             <div class="form-popup">
                 <form class="form-container" id="product-form" onsubmit="addOrUpdate(event)">
                     <div class="form-columns">
@@ -157,12 +160,12 @@
                 <table id="product-table">
                     <thead>
                         <tr>
-                            <th onclick="sortTable('prodID')">Product ID</th>
-                            <th onclick="sortTable('prodName')">Product Name</th>
-                            <th onclick="sortTable('prodDesc')">Description</th>
-                            <th onclick="sortTable('prodCat')">Category</th>
-                            <th onclick="sortTable('prodPrice')">Price</th>
-                            <th onclick="sortTable('prodSold')">Units Sold</th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodID')">Product ID</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodName')">Product Name</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodDesc')">Description</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodCat')">Category</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodPrice')">Price</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodSold')">Units Sold</button></th>
                             <th>Action</th>
                         </tr>
                     </thead>

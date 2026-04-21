@@ -19,7 +19,9 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <i class="fa-solid fa-xmark" title="Close" onclick="closeSidebar()"></i>
+            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+                <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
+            </button>
         </div>
         <ul class="menu">
             <li>
@@ -63,9 +65,9 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <div class="menu-icon" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
-            </div>
+            </button>
             <div class="header-title">
                 <!-- <span>Primary</span> -->
                 <h2>Orders</h2>
@@ -87,6 +89,7 @@
                     <button class="download-button" onclick="exportToCSV()">Export to CSV</button>
                 </div>
             </div>
+            <p id="page-feedback" class="page-feedback" role="status" aria-live="polite"></p>
 
             <div class="form-popup">
                 <form class="form-container" id="order-form" onsubmit="addOrUpdate(event)">
@@ -171,15 +174,15 @@
                 <table id="order-table">
                     <thead>
                         <tr>
-                            <th onclick="sortTable('orderID')">Order ID</th>
-                            <th onclick="sortTable('orderDate')">Order Date</th>
-                            <th onclick="sortTable('itemName')">Item Name</th>
-                            <th onclick="sortTable('itemPrice')">Item Price</th>
-                            <th onclick="sortTable('qtyBought')">Qty</th>
-                            <th onclick="sortTable('shipping')">Shipping Fee</th>
-                            <th onclick="sortTable('taxes')">Taxes</th>
-                            <th onclick="sortTable('orderTotal')">Order Total</th>
-                            <th onclick="sortTable('orderStatus')">Order Status</th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderID')">Order ID</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderDate')">Order Date</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('itemName')">Item Name</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('itemPrice')">Item Price</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('qtyBought')">Qty</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('shipping')">Shipping Fee</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('taxes')">Taxes</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderTotal')">Order Total</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderStatus')">Order Status</button></th>
                             <th>Action</th>
                         </tr>
                     </thead>

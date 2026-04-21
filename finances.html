@@ -19,7 +19,9 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <i class="fa-solid fa-xmark" title="Close" onclick="closeSidebar()"></i>
+            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+                <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
+            </button>
         </div>
         <ul class="menu">
             <li>
@@ -63,9 +65,9 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <div class="menu-icon" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
-            </div>
+            </button>
             <div class="header-title">
                 <!-- <span>Primary</span> -->
                 <h2>Expenses</h2>
@@ -87,6 +89,7 @@
                     <button class="download-button" onclick="exportToCSV()">Export to CSV</button>
                 </div>
             </div>
+            <p id="page-feedback" class="page-feedback" role="status" aria-live="polite"></p>
 
             <div class="form-popup">
                 <form class="form-container" id="transaction-form" onsubmit="addOrUpdate(event)">
@@ -123,11 +126,11 @@
                 <table id="finance-table">
                     <thead>
                         <tr>
-                            <th onclick="sortTable('trID')">S/N</th>
-                            <th onclick="sortTable('trDate')">Date</th>
-                            <th onclick="sortTable('trCategory')">Expense Category</th>
-                            <th onclick="sortTable('trAmount')">Amount</th>
-                            <th onclick="sortTable('trNotes')">Notes</th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trID')">S/N</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trDate')">Date</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trCategory')">Expense Category</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trAmount')">Amount</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trNotes')">Notes</button></th>
                             <th>Action</th>
                         </tr>
                     </thead>

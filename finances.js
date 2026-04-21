@@ -10,24 +10,135 @@ function closeSidebar() {
 
 
 function openForm() {
-    var form = document.getElementById("transaction-form")
-    form.style.display = (form.style.display === "block") ? "none" : "block";
+    resetFormState();
+    document.getElementById("transaction-form").style.display = "block";
 }
 
 function closeForm() {
+    resetFormState();
     document.getElementById("transaction-form").style.display = "none";
 }
 
 
 let transactions = [];
-let serialNumberCounter;
+
+function resetFormState() {
+    document.getElementById("transaction-form").reset();
+    document.getElementById("submitBtn").textContent = "Add";
+}
+
+function getValidatedTransactionFormData() {
+    const form = document.getElementById("transaction-form");
+
+    if (!form.checkValidity()) {
+        showFeedback("Please complete the required expense fields before submitting.", "error");
+        form.reportValidity();
+        return null;
+    }
+
+    const transaction = {
+        trDate: document.getElementById("tr-date").value,
+        trCategory: document.getElementById("tr-category").value.trim(),
+        trAmount: Number(document.getElementById("tr-amount").value),
+        trNotes: document.getElementById("tr-notes").value.trim(),
+    };
+
+    if (!transaction.trDate || !transaction.trCategory || !transaction.trNotes) {
+        showFeedback("Please complete the required expense fields before submitting.", "error");
+        return null;
+    }
+
+    if (!Number.isFinite(transaction.trAmount) || transaction.trAmount < 0) {
+        showFeedback("Expense amount must be a valid non-negative number.", "error");
+        return null;
+    }
+
+    return transaction;
+}
+
+function createCell(value, className = "") {
+    const cell = document.createElement("td");
+    if (className) {
+        cell.className = className;
+    }
+    cell.textContent = value;
+    return cell;
+}
+
+function createActionButton(title, iconClassName, onClick) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.title = title;
+    button.setAttribute("aria-label", title);
+    button.addEventListener("click", onClick);
+
+    const icon = document.createElement("i");
+    icon.className = iconClassName;
+    icon.setAttribute("aria-hidden", "true");
+    button.appendChild(icon);
+
+    return button;
+}
+
+function showFeedback(message, type = "success") {
+    const feedbackElement = document.getElementById("page-feedback");
+    feedbackElement.textContent = message;
+    feedbackElement.className = `page-feedback is-${type}`;
+}
+
+function clearFeedback() {
+    const feedbackElement = document.getElementById("page-feedback");
+    feedbackElement.textContent = "";
+    feedbackElement.className = "page-feedback";
+}
+
+function persistFallback(key, fallbackData) {
+    try {
+        localStorage.setItem(key, JSON.stringify(fallbackData));
+    } catch (error) {
+        console.warn(`Unable to persist fallback data for ${key}.`, error);
+    }
+
+    return fallbackData;
+}
+
+function getStoredArray(key, fallbackData) {
+    try {
+        const storedValue = localStorage.getItem(key);
+
+        if (!storedValue) {
+            return persistFallback(key, fallbackData);
+        }
+
+        const parsedValue = JSON.parse(storedValue);
+
+        if (!Array.isArray(parsedValue)) {
+            throw new Error(`Invalid data format for ${key}`);
+        }
+
+        return parsedValue;
+    } catch (error) {
+        console.warn(`Unable to parse stored data for ${key}. Resetting to fallback data.`, error);
+        return persistFallback(key, fallbackData);
+    }
+}
+
+function getNextTransactionId() {
+    const highestId = transactions.reduce((maxId, transaction) => {
+        const numericId = Number(transaction.trID);
+
+        if (!Number.isFinite(numericId)) {
+            return maxId;
+        }
+
+        return Math.max(maxId, numericId);
+    }, 0);
+
+    return highestId + 1;
+}
 
 window.onload = function () {
-    const storedTransactions = localStorage.getItem("bizTrackTransactions");
-    if (storedTransactions) {
-        transactions = JSON.parse(storedTransactions);
-    } else {
-        transactions = [
+    transactions = getStoredArray("bizTrackTransactions", [
             {
                 trID: 1,
                 trDate: "2024-01-05",
@@ -63,12 +174,7 @@ window.onload = function () {
                 trAmount: 20.00,
                 trNotes: "Pizza"
             },
-        ];
-
-        serialNumberCounter = transactions.length + 1
-  
-        localStorage.setItem("bizTrackTransactions", JSON.stringify(transactions));
-    }
+        ]);
   
     renderTransactions(transactions);
 }
@@ -86,31 +192,28 @@ function addOrUpdate(event) {
 
 function newTransaction(event) {
     event.preventDefault();
-    const trDate = document.getElementById("tr-date").value;
-    const trCategory = document.getElementById("tr-category").value;
-    const trAmount = parseFloat(document.getElementById("tr-amount").value);
-    const trNotes = document.getElementById("tr-notes").value;
+    clearFeedback();
+    const transactionData = getValidatedTransactionFormData();
 
-    serialNumberCounter = transactions.length + 1;
-    let trID = serialNumberCounter;
+    if (!transactionData) {
+        return;
+    }
+
+    const trID = getNextTransactionId();
     
     const transaction = {
       trID,
-      trDate,
-      trCategory,
-      trAmount,
-      trNotes,
+      ...transactionData,
     };
     
     transactions.push(transaction);
   
     renderTransactions(transactions);
     localStorage.setItem("bizTrackTransactions", JSON.stringify(transactions));
-
-    serialNumberCounter++;
     displayExpenses();
   
-    document.getElementById("transaction-form").reset();
+    resetFormState();
+    showFeedback(`Expense ${trID} added successfully.`);
 }
 
 
@@ -132,17 +235,26 @@ function renderTransactions(transactions) {
 
         const formattedAmount = typeof transaction.trAmount === 'number' ? `$${transaction.trAmount.toFixed(2)}` : '';
 
-        transactionRow.innerHTML = `
-            <td>${transaction.trID}</td>
-            <td>${transaction.trDate}</td>
-            <td>${transaction.trCategory}</td>
-            <td class="tr-amount">${formattedAmount}</td>
-            <td>${transaction.trNotes}</td>
-            <td class="action">
-                <i title="Edit" onclick="editRow('${transaction.trID}')" class="edit-icon fa-solid fa-pen-to-square"></i>
-                <i onclick="deleteTransaction('${transaction.trID}')" class="delete-icon fas fa-trash-alt"></i>
-            </td> 
-        `;
+        transactionRow.appendChild(createCell(transaction.trID));
+        transactionRow.appendChild(createCell(transaction.trDate));
+        transactionRow.appendChild(createCell(transaction.trCategory));
+        transactionRow.appendChild(createCell(formattedAmount, "tr-amount"));
+        transactionRow.appendChild(createCell(transaction.trNotes));
+
+        const actionCell = document.createElement("td");
+        actionCell.className = "action";
+
+        const editButton = createActionButton("Edit", "edit-icon fa-solid fa-pen-to-square", () => {
+            editRow(transaction.trID);
+        });
+        const deleteButton = createActionButton("Delete", "delete-icon fas fa-trash-alt", () => {
+            deleteTransaction(transaction.trID);
+        });
+
+        actionCell.appendChild(editButton);
+        actionCell.appendChild(deleteButton);
+        transactionRow.appendChild(actionCell);
+
         transactionTableBody.appendChild(transactionRow);
   });
   displayExpenses();
@@ -182,6 +294,7 @@ function deleteTransaction(trID) {
         localStorage.setItem("bizTrackTransactions", JSON.stringify(transactions));
 
         renderTransactions(transactions);
+        showFeedback(`Expense ${trID} deleted successfully.`);
     }
 }
 
@@ -189,12 +302,15 @@ function deleteTransaction(trID) {
     const indexToUpdate = transactions.findIndex(transaction => transaction.trID === trID);
 
     if (indexToUpdate !== -1) {
+        const transactionData = getValidatedTransactionFormData();
+
+        if (!transactionData) {
+            return;
+        }
+
         const updatedTransaction = {
             trID: trID,
-            trDate: document.getElementById("tr-date").value,
-            trCategory: document.getElementById("tr-category").value,
-            trAmount: parseFloat(document.getElementById("tr-amount").value),
-            trNotes: document.getElementById("tr-notes").value,
+            ...transactionData,
         };
 
         transactions[indexToUpdate] = updatedTransaction;
@@ -203,8 +319,8 @@ function deleteTransaction(trID) {
 
         renderTransactions(transactions);
 
-        document.getElementById("transaction-form").reset();
-        document.getElementById("submitBtn").textContent = "Add";
+        resetFormState();
+        showFeedback(`Expense ${trID} updated successfully.`);
     }
 }
 
@@ -237,15 +353,34 @@ document.getElementById("searchInput").addEventListener("keyup", function(event)
     }
 });
 
+document.getElementById("searchInput").addEventListener("input", performSearch);
+document.getElementById("searchInput").addEventListener("search", performSearch);
+
 
 function performSearch() {
-    const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    const searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
     const rows = document.querySelectorAll(".transaction-row");
+    let visibleCount = 0;
 
     rows.forEach(row => {
         const visible = row.innerText.toLowerCase().includes(searchInput);
         row.style.display = visible ? "table-row" : "none";
+        if (visible) {
+            visibleCount += 1;
+        }
     });
+
+    if (!searchInput) {
+        clearFeedback();
+        return;
+    }
+
+    if (visibleCount === 0) {
+        showFeedback("No matching expenses found.", "info");
+        return;
+    }
+
+    clearFeedback();
 }
 
 
@@ -272,11 +407,20 @@ function exportToCSV() {
     link.click();
   
     document.body.removeChild(link);
+    showFeedback("Expenses exported to CSV.");
 }
   
+function escapeCSVValue(value) {
+    const stringValue = String(value ?? "");
+    const safeValue = /^[\t\r ]*[=+\-@]/.test(stringValue) ? `'${stringValue}` : stringValue;
+    const escapedQuotes = safeValue.replace(/"/g, '""');
+
+    return /[",\n\r]/.test(escapedQuotes) ? `"${escapedQuotes}"` : escapedQuotes;
+}
+
 function generateCSV(data) {
-    const headers = Object.keys(data[0]).join(',');
-    const rows = data.map(order => Object.values(order).join(','));
+    const headers = Object.keys(data[0]).map(escapeCSVValue).join(',');
+    const rows = data.map(order => Object.values(order).map(escapeCSVValue).join(','));
 
     return `${headers}\n${rows.join('\n')}`;
 }
