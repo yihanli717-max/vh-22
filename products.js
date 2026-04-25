@@ -22,9 +22,18 @@ function closeForm() {
 
 let products = [];
 
+function setProductIdReadOnly(isReadOnly) {
+  const productIdInput = document.getElementById("product-id");
+  productIdInput.readOnly = isReadOnly;
+  productIdInput.setAttribute("aria-readonly", String(isReadOnly));
+}
+
 function resetFormState() {
+  const productForm = document.getElementById("product-form");
+  delete productForm.dataset.editingId;
   document.getElementById("product-form").reset();
   document.getElementById("submitBtn").textContent = "Add";
+  setProductIdReadOnly(false);
 }
 
 function getValidatedProductFormData() {
@@ -179,7 +188,7 @@ function addOrUpdate(event) {
   if (type === 'Add') {
       newProduct(event);
   } else if (type === 'Update'){
-      const prodID = document.getElementById("product-id").value;
+      const prodID = document.getElementById("product-form").dataset.editingId;
       updateProduct(prodID);
   }
 }
@@ -251,6 +260,7 @@ function renderProducts(products) {
 }
 
 function editRow(prodID) {
+  const productForm = document.getElementById("product-form");
   const productToEdit = products.find(product => product.prodID === prodID);
 
   document.getElementById("product-id").value = productToEdit.prodID;
@@ -260,9 +270,11 @@ function editRow(prodID) {
   document.getElementById("product-price").value = productToEdit.prodPrice;
   document.getElementById("product-sold").value = productToEdit.prodSold;
 
+  productForm.dataset.editingId = productToEdit.prodID;
   document.getElementById("submitBtn").textContent = "Update";
+  setProductIdReadOnly(true);
 
-  document.getElementById("product-form").style.display = "block";
+  productForm.style.display = "block";
 }
 
 function deleteProduct(prodID) {
@@ -288,10 +300,7 @@ function updateProduct(prodID) {
             return;
         }
 
-        if (isDuplicateID(updatedProduct.prodID, prodID)) {
-            showFeedback("Product ID already exists. Please use a unique ID.", "error");
-            return;
-        }
+        updatedProduct.prodID = prodID;
 
         products[indexToUpdate] = updatedProduct;
 

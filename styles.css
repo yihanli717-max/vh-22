@@ -316,6 +316,12 @@ label {
 .form-container select:focus {
     background-color: #ddd;
 }
+
+.form-container input[readonly] {
+    background-color: #f3f3f3;
+    color: #666;
+    cursor: not-allowed;
+}
 .menu a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -362,7 +368,8 @@ textarea:focus-visible {
     /* justify-content: center; */
     gap: 1rem;
 }
-.card-wrapper a {
+.card-wrapper a,
+.card-wrapper .summary-card {
     text-decoration: none;
     color: var(--black-color);
     display: flex;
@@ -377,19 +384,19 @@ textarea:focus-visible {
 .card-wrapper a:hover {
     transform: translateY(-5px);
 }
-.card-wrapper a:first-child {
+.card-wrapper > :first-child {
     background-color: #24967259;
     border-left: 8px solid #249672;
 }
-.card-wrapper a:nth-child(2) {
+.card-wrapper > :nth-child(2) {
     background-color: #A37A7459;
     border-left: 8px solid #A37A74;
 }
-.card-wrapper a:nth-child(3) {
+.card-wrapper > :nth-child(3) {
     background-color: #247BA059;
     border-left: 8px solid #247BA0;
 }
-.card-wrapper a:nth-child(4) {
+.card-wrapper > :nth-child(4) {
     background-color: #e4927359;
     border-left: 8px solid #e49273;
 }

@@ -21,9 +21,18 @@ function closeForm() {
 
 let orders = [];
 
+function setOrderIdReadOnly(isReadOnly) {
+    const orderIdInput = document.getElementById("order-id");
+    orderIdInput.readOnly = isReadOnly;
+    orderIdInput.setAttribute("aria-readonly", String(isReadOnly));
+}
+
 function resetFormState() {
+    const orderForm = document.getElementById("order-form");
+    delete orderForm.dataset.editingId;
     document.getElementById("order-form").reset();
     document.getElementById("submitBtn").textContent = "Add";
+    setOrderIdReadOnly(false);
 }
 
 function getValidatedOrderFormData() {
@@ -211,7 +220,7 @@ function addOrUpdate(event) {
     if (type === 'Add') {
         newOrder(event);
     } else if (type === 'Update'){
-        const orderID = document.getElementById("order-id").value;
+        const orderID = document.getElementById("order-form").dataset.editingId;
         updateOrder(orderID);
     }
 }
@@ -321,6 +330,7 @@ function displayRevenue() {
 }
 
 function editRow(orderID) {
+    const orderForm = document.getElementById("order-form");
     const orderToEdit = orders.find(order => order.orderID === orderID);
 
     document.getElementById("order-id").value = orderToEdit.orderID;
@@ -333,9 +343,11 @@ function editRow(orderID) {
     document.getElementById("order-total").value = orderToEdit.orderTotal;
     document.getElementById("order-status").value = orderToEdit.orderStatus;
 
+    orderForm.dataset.editingId = orderToEdit.orderID;
     document.getElementById("submitBtn").textContent = "Update";
+    setOrderIdReadOnly(true);
 
-    document.getElementById("order-form").style.display = "block";
+    orderForm.style.display = "block";
 }
 
 function deleteOrder(orderID) {
@@ -361,10 +373,7 @@ function updateOrder(orderID) {
             return;
         }
 
-        if (isDuplicateID(updatedOrder.orderID, orderID)) {
-            showFeedback("Order ID already exists. Please use a unique ID.", "error");
-            return;
-        }
+        updatedOrder.orderID = orderID;
 
         orders[indexToUpdate] = updatedOrder;
 

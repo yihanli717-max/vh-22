@@ -683,3 +683,91 @@ diff --git a/styles.css b/styles.css
 +    color: var(--blue-color);
 +}
 ```
+
+id: 12
+deficiency type: Navigation / UX - Dead or Misleading Links
+deficiency description: The dashboard balance card was wrapped in `href="#"`, which looked like a meaningful navigation target but only acted as a dummy link. That created a misleading affordance for users and could also bounce keyboard users back to the top of the page. The fix removes the fake link and keeps the card as a non-interactive summary item, while extending the existing card styling so the layout remains unchanged.
+original location: `index.html`, L115; `styles.css`, L365
+improvement:
+```diff
+diff --git a/index.html b/index.html
+@@
+-                <a href="#">
++                <div class="summary-card" aria-label="Business balance summary">
+                     <div class="payment-card">
+                         <div class="card-header">
+                             <div class="amount" id="balance"></div>
+                             <i class="fas fa-arrow-up-right-dots icon"></i>
+                         </div>
+                         <span class="card-detail">**** **** **** 2951</span>
+                     </div>
+-                </a>
++                </div>
+
+diff --git a/styles.css b/styles.css
+@@
+-.card-wrapper a {
++.card-wrapper a,
++.card-wrapper .summary-card {
+     text-decoration: none;
+     color: var(--black-color);
+     ...
+ }
+@@
+-.card-wrapper a:nth-child(4) {
++.card-wrapper > :nth-child(4) {
+     background-color: #e4927359;
+     border-left: 8px solid #e49273;
+ }
+```
+
+id: 13
+deficiency type: Bug Fix - Immutable IDs In Edit Mode
+deficiency description: Product and order IDs are used as record keys for lookup, duplicate checks, updates, and deletion, so they should stay stable once a record exists. The previous UI left the ID field looking editable during update, but changing it did not behave consistently because the edit flow still depended on the original key. The fix makes IDs read-only in edit mode, stores the original editing key on the form, and forces updates to preserve that original ID while returning the field to editable mode for new records.
+original location: `products.js`, L25 and L191; `orders.js`, L24 and L223; `styles.css`, L320
+improvement:
+```diff
+diff --git a/products.js b/products.js
+@@
++function setProductIdReadOnly(isReadOnly) {
++  const productIdInput = document.getElementById("product-id");
++  productIdInput.readOnly = isReadOnly;
++}
+@@
++  delete productForm.dataset.editingId;
++  setProductIdReadOnly(false);
+@@
+-      const prodID = document.getElementById("product-id").value;
++      const prodID = document.getElementById("product-form").dataset.editingId;
+@@
++  productForm.dataset.editingId = productToEdit.prodID;
++  setProductIdReadOnly(true);
+@@
++        updatedProduct.prodID = prodID;
+
+diff --git a/orders.js b/orders.js
+@@
++function setOrderIdReadOnly(isReadOnly) {
++    const orderIdInput = document.getElementById("order-id");
++    orderIdInput.readOnly = isReadOnly;
++}
+@@
++    delete orderForm.dataset.editingId;
++    setOrderIdReadOnly(false);
+@@
+-        const orderID = document.getElementById("order-id").value;
++        const orderID = document.getElementById("order-form").dataset.editingId;
+@@
++    orderForm.dataset.editingId = orderToEdit.orderID;
++    setOrderIdReadOnly(true);
+@@
++        updatedOrder.orderID = orderID;
+
+diff --git a/styles.css b/styles.css
+@@
++.form-container input[readonly] {
++    background-color: #f3f3f3;
++    color: #666;
++    cursor: not-allowed;
++}
+```
