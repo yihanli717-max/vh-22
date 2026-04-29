@@ -85,6 +85,39 @@ describe("products page", () => {
     expect(page.document.getElementById("page-feedback").textContent).toBe("Product PD999 added successfully.");
   });
 
+  it("rejects duplicate product IDs before persisting", async () => {
+    await loadProductsPage();
+
+    page.window.openForm();
+    fillProductForm({ id: "PD001" });
+    submitForm();
+
+    expect(productRows()).toHaveLength(5);
+    expect(getStoredProducts().filter((product) => product.prodID === "PD001")).toHaveLength(1);
+    expect(page.document.getElementById("page-feedback").textContent).toBe(
+      "Product ID already exists. Please use a unique ID."
+    );
+  });
+
+  it("renders script payloads as text without creating executable script nodes", async () => {
+    await loadProductsPage();
+
+    const payload = "<script>window.__productXssExecuted()</script>";
+    page.window.__productXssExecuted = vi.fn();
+
+    page.window.openForm();
+    fillProductForm({
+      id: "PD777",
+      desc: payload
+    });
+    submitForm();
+
+    const addedRow = productRows().find((row) => row.dataset.prodID === "PD777");
+    expect(addedRow.children[2].textContent).toBe(payload);
+    expect(addedRow.querySelector("script")).toBeNull();
+    expect(page.window.__productXssExecuted).not.toHaveBeenCalled();
+  });
+
   it("keeps product IDs read-only and immutable during edits", async () => {
     await loadProductsPage();
 
