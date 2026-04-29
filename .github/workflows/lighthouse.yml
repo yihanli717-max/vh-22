@@ -1,0 +1,54 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: Lighthouse reports
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Start static server
+        run: python3 -m http.server 8080 --bind 127.0.0.1 > /tmp/biztrack-server.log 2>&1 &
+
+      - name: Wait for static server
+        run: |
+          for i in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8080/index.html > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat /tmp/biztrack-server.log
+          exit 1
+
+      - name: Audit pages with Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://127.0.0.1:8080/index.html
+            http://127.0.0.1:8080/products.html
+            http://127.0.0.1:8080/orders.html
+            http://127.0.0.1:8080/finances.html
+            http://127.0.0.1:8080/help.html
+          uploadArtifacts: true
+          temporaryPublicStorage: true
