@@ -18,6 +18,17 @@ function removeScriptTags(html) {
 }
 
 function installBrowserMocks(window) {
+  if (!("innerText" in window.HTMLElement.prototype)) {
+    Object.defineProperty(window.HTMLElement.prototype, "innerText", {
+      get() {
+        return this.textContent;
+      },
+      set(value) {
+        this.textContent = value;
+      }
+    });
+  }
+
   if (!window.URL.createObjectURL) {
     window.URL.createObjectURL = vi.fn(() => "blob:mock-url");
   }
@@ -43,6 +54,7 @@ function createScriptSandbox(window) {
     sessionStorage: window.sessionStorage,
     URL: window.URL,
     Blob: window.Blob,
+    ApexCharts: window.ApexCharts,
     Event: window.Event,
     KeyboardEvent: window.KeyboardEvent,
     MouseEvent: window.MouseEvent,
@@ -76,7 +88,7 @@ function runScript(window, sandbox, source, filename) {
   syncGlobalsToWindow(window, sandbox);
 }
 
-export async function loadPage({ htmlFile, scripts = [], runLoad = true, storage = {} }) {
+export async function loadPage({ htmlFile, scripts = [], runLoad = true, storage = {}, rawStorage = {} }) {
   const rawHtml = await readRepoFile(htmlFile);
   const dom = new JSDOM(removeScriptTags(rawHtml), {
     url: `http://localhost/${htmlFile}`,
@@ -91,6 +103,10 @@ export async function loadPage({ htmlFile, scripts = [], runLoad = true, storage
 
   Object.entries(storage).forEach(([key, value]) => {
     window.localStorage.setItem(key, JSON.stringify(value));
+  });
+
+  Object.entries(rawStorage).forEach(([key, value]) => {
+    window.localStorage.setItem(key, value);
   });
 
   for (const scriptPath of scripts) {
