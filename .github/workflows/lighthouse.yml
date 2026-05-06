@@ -42,6 +42,7 @@ jobs:
           exit 1
 
       - name: Audit pages with Lighthouse
+        id: lighthouse
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
@@ -50,5 +51,74 @@ jobs:
             http://127.0.0.1:8080/orders.html
             http://127.0.0.1:8080/finances.html
             http://127.0.0.1:8080/help.html
+          configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+
+      - name: Write Lighthouse score summary
+        if: always()
+        env:
+          LHCI_RESULTS_PATH: ${{ steps.lighthouse.outputs.resultsPath }}
+          LHCI_LINKS: ${{ steps.lighthouse.outputs.links }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          function parseJson(value, fallback) {
+            try {
+              return JSON.parse(value || '');
+            } catch {
+              return fallback;
+            }
+          }
+
+          const resultsPath = process.env.LHCI_RESULTS_PATH || '.lighthouseci';
+          const links = parseJson(process.env.LHCI_LINKS, {});
+          const score = (value) => `${Math.round((value ?? 0) * 100)}`;
+          const pageName = (url) => new URL(url).pathname.replace('/', '') || 'index.html';
+          const reports = [];
+
+          if (fs.existsSync(resultsPath)) {
+            for (const fileName of fs.readdirSync(resultsPath)) {
+              if (!fileName.endsWith('.json')) {
+                continue;
+              }
+
+              const filePath = path.join(resultsPath, fileName);
+              const report = parseJson(fs.readFileSync(filePath, 'utf8'), null);
+
+              if (report?.categories?.accessibility) {
+                reports.push(report);
+              }
+            }
+          }
+
+          reports.sort((a, b) => pageName(a.finalUrl).localeCompare(pageName(b.finalUrl)));
+
+          const lines = [
+            '## Lighthouse CI Scores',
+            '',
+            'Accessibility must be **90+** for every audited page.',
+            '',
+            '| Page | Accessibility | Performance | Best Practices | SEO | Report |',
+            '| --- | ---: | ---: | ---: | ---: | --- |'
+          ];
+
+          if (reports.length === 0) {
+            lines.push('| No Lighthouse reports were produced. | - | - | - | - | - |');
+          } else {
+            for (const reportData of reports) {
+              const categories = reportData.categories;
+              const url = reportData.finalUrl || reportData.requestedUrl;
+              const reportUrl = links[url] || links[reportData.requestedUrl] || '';
+              const report = reportUrl ? `[Open report](${reportUrl})` : '-';
+
+              lines.push(
+                `| ${pageName(url)} | ${score(categories.accessibility.score)} | ${score(categories.performance.score)} | ${score(categories['best-practices'].score)} | ${score(categories.seo.score)} | ${report} |`
+              );
+            }
+          }
+
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
+          NODE
