@@ -19,7 +19,7 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+            <button type="button" class="icon-button" aria-label="Close navigation" data-i18n-aria-label="action.closeNav" onclick="closeSidebar()">
                 <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
             </button>
         </div>
@@ -27,37 +27,37 @@
             <li>
                 <a href="./index.html">
                     <i class="fa-solid fa-gauge-high"></i>
-                    <span>Dashboard</span>
+                    <span data-i18n="nav.dashboard">Dashboard</span>
                 </a>
             </li>
             <li>
                 <a href="./products.html">
                     <i class="fas fa-dolly"></i>
-                    <span>Products</span>
+                    <span data-i18n="nav.products">Products</span>
                 </a>
             </li>
             <li>
                 <a href="./orders.html">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
+                    <span data-i18n="nav.orders">Orders</span>
                 </a>
             </li>
             <li class="active">
                 <a href="./finances.html">
                     <i class="fas fa-sack-dollar"></i>
-                    <span>Expenses</span>
+                    <span data-i18n="nav.expenses">Expenses</span>
                 </a>
             </li>
             <li>
                 <a href="./help.html">
                     <i class="fas fa-question-circle"></i>
-                    <span>Help</span>
+                    <span data-i18n="nav.help">Help</span>
                 </a>
             </li>
             <li class="logout">
                 <a href="./about.html">
                     <i class="fa-solid fa-users-line"></i>
-                    <span>Meet the Developer</span>
+                    <span data-i18n="nav.developer">Meet the Developer</span>
                 </a>
             </li>
         </ul>
@@ -65,17 +65,24 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" data-i18n-aria-label="action.openNav" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="header-title">
                 <!-- <span>Primary</span> -->
-                <h2>Expenses</h2>
+                <h2 data-i18n="finances.title">Expenses</h2>
             </div>
             <div class="user-info">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="search" id="searchInput" placeholder="Search">
+                    <input type="search" id="searchInput" placeholder="Search" data-i18n-placeholder="action.search">
+                </div>
+                <div class="language-switcher">
+                    <label for="language-select" data-i18n="language.label">Language</label>
+                    <select id="language-select" class="language-select" aria-label="Language" data-i18n-aria-label="language.label">
+                        <option value="en" data-i18n="language.english">English</option>
+                        <option value="zh" data-i18n="language.chinese">中文</option>
+                    </select>
                 </div>
                 <!-- <i class="fas fa-user-alt fa-xl"></i> -->
             </div>
@@ -83,10 +90,10 @@
 
         <div class="table-wrapper">
             <div class="product-title">
-                <h3 class="main-title">Expenses</h3>
+                <h3 class="main-title" data-i18n="finances.title">Expenses</h3>
                 <div class="finance-button">
-                    <button class="add-button" onclick="openForm()">Add Expense</button>
-                    <button class="download-button" onclick="exportToCSV()">Export to CSV</button>
+                    <button class="add-button" onclick="openForm()" data-i18n="finances.addExpense">Add Expense</button>
+                    <button class="download-button" onclick="exportToCSV()" data-i18n="action.exportCsv">Export to CSV</button>
                 </div>
             </div>
             <p id="page-feedback" class="page-feedback" role="status" aria-live="polite"></p>
@@ -95,12 +102,12 @@
                 <form class="form-container" id="transaction-form" onsubmit="addOrUpdate(event)">
                     <div class="form-columns">
                             <input type="hidden" id="tr-id">
-                            <label for="tr-date"><b>Date: </b></label>
+                            <label for="tr-date"><b data-i18n="finances.date">Date</b><b>: </b></label>
                             <input type="date" id="tr-date" required>
 
-                            <label for="tr-category"><b>Category: </b></label>
+                            <label for="tr-category"><b data-i18n="finances.category">Category</b><b>: </b></label>
                             <select name="tr-category" id="tr-category" required>
-                                <option value="" disabled selected hidden>Choose an expense category</option>
+                                <option value="" disabled selected hidden data-i18n="finances.chooseExpenseCategory">Choose an expense category</option>
                                 <option value="Rent">Rent</option>
                                 <option value="Utilities">Utilities</option>
                                 <option value="Supplies">Supplies</option>
@@ -108,16 +115,16 @@
                                 <option value="Miscellaneous">Miscellaneous</option>
                             </select>
 
-                            <label for="tr-amount"><b>Amount: </b></label>
+                            <label for="tr-amount"><b data-i18n="finances.amount">Amount</b><b>: </b></label>
                             <input type="number" id="tr-amount" placeholder="$0.00" min="0.00" max="10000.00" step="0.01" required>
 
-                            <label for="tr-notes"><b>Notes: </b></label>
+                            <label for="tr-notes"><b data-i18n="finances.notes">Notes</b><b>: </b></label>
                             <input type="text" id="tr-notes" placeholder="Power bill" required>
                     </div>
                     
                     <div class="button-col">
-                        <button type="submit" class="btn" id="submitBtn">Add</button>
-                        <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+                        <button type="submit" class="btn" id="submitBtn" data-i18n="action.add">Add</button>
+                        <button type="button" class="btn cancel" onclick="closeForm()" data-i18n="action.cancel">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -126,12 +133,12 @@
                 <table id="finance-table">
                     <thead>
                         <tr>
-                            <th><button type="button" class="sort-button" onclick="sortTable('trID')">S/N</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('trDate')">Date</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('trCategory')">Expense Category</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('trAmount')">Amount</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('trNotes')">Notes</button></th>
-                            <th>Action</th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trID')" data-i18n="finances.serial">S/N</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trDate')" data-i18n="finances.date">Date</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trCategory')" data-i18n="finances.expenseCategory">Expense Category</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trAmount')" data-i18n="finances.amount">Amount</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('trNotes')" data-i18n="finances.notes">Notes</button></th>
+                            <th data-i18n="table.action">Action</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -149,6 +156,7 @@
     </div>
     </div>
 
+    <script src="./i18n.js"></script>
     <script src="./finances.js"></script>
 </body>
 </html>

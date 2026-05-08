@@ -19,7 +19,7 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+            <button type="button" class="icon-button" aria-label="Close navigation" data-i18n-aria-label="action.closeNav" onclick="closeSidebar()">
                 <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
             </button>
         </div>
@@ -27,37 +27,37 @@
             <li>
                 <a href="./index.html">
                     <i class="fa-solid fa-gauge-high"></i>
-                    <span>Dashboard</span>
+                    <span data-i18n="nav.dashboard">Dashboard</span>
                 </a>
             </li>
             <li>
                 <a href="./products.html">
                     <i class="fas fa-dolly"></i>
-                    <span>Products</span>
+                    <span data-i18n="nav.products">Products</span>
                 </a>
             </li>
             <li>
                 <a href="./orders.html">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
+                    <span data-i18n="nav.orders">Orders</span>
                 </a>
             </li>
             <li>
                 <a href="./finances.html">
                     <i class="fas fa-sack-dollar"></i>
-                    <span>Expenses</span>
+                    <span data-i18n="nav.expenses">Expenses</span>
                 </a>
             </li>
             <li>
                 <a href="./help.html">
                     <i class="fas fa-question-circle"></i>
-                    <span>Help</span>
+                    <span data-i18n="nav.help">Help</span>
                 </a>
             </li>
             <li class="logout active">
                 <a href="./about.html">
                     <i class="fa-solid fa-users-line"></i>
-                    <span>Meet the Developer</span>
+                    <span data-i18n="nav.developer">Meet the Developer</span>
                 </a>
             </li>
         </ul>
@@ -65,20 +65,27 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" data-i18n-aria-label="action.openNav" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="header-title">
-                <h2>My Coding Journey</h2>
+                <h2 data-i18n="about.title">My Coding Journey</h2>
             </div>
             <div class="user-info">
+                <div class="language-switcher">
+                    <label for="language-select" data-i18n="language.label">Language</label>
+                    <select id="language-select" class="language-select" aria-label="Language" data-i18n-aria-label="language.label">
+                        <option value="en" data-i18n="language.english">English</option>
+                        <option value="zh" data-i18n="language.chinese">中文</option>
+                    </select>
+                </div>
             </div>
         </div>
 
         <div class="about-container">
             <section id="using-biztrack">
                 <article>
-                    <h3 class="main-title">Hey, I'm Sumayyah!
+                    <h3 class="main-title" data-i18n="about.heading">Hey, I'm Sumayyah!
                     </h3>
                     <p>Welcome to my little corner of the internet, where I'm rolling up my sleeves and diving into the coding world. I’m not your typical tech guru – I’m just a small business owner navigating the hustle and bustle of entrepreneurship. Oh, and did I mention I’m also part of the <a href="https://www.getcoding.ca/coaching-program-nl" target="_blank" rel="noopener noreferrer">GetCoding NL</a> program? Yeah, it's been quite the journey, and I owe a huge shoutout to my coding coach, Sam.</p> 
                 </article>
@@ -116,5 +123,6 @@
             </section>
         </div>
     </div>
+    <script src="./i18n.js"></script>
     <script src="./help.js"></script>
 </body>

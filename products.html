@@ -19,7 +19,7 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+            <button type="button" class="icon-button" aria-label="Close navigation" data-i18n-aria-label="action.closeNav" onclick="closeSidebar()">
                 <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
             </button>
         </div>
@@ -27,37 +27,37 @@
             <li>
                 <a href="./index.html">
                     <i class="fa-solid fa-gauge-high"></i>
-                    <span>Dashboard</span>
+                    <span data-i18n="nav.dashboard">Dashboard</span>
                 </a>
             </li>
             <li class="active">
                 <a href="./products.html">
                     <i class="fas fa-dolly"></i>
-                    <span>Products</span>
+                    <span data-i18n="nav.products">Products</span>
                 </a>
             </li>
             <li>
                 <a href="./orders.html">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
+                    <span data-i18n="nav.orders">Orders</span>
                 </a>
             </li>
             <li>
                 <a href="./finances.html">
                     <i class="fas fa-sack-dollar"></i>
-                    <span>Expenses</span>
+                    <span data-i18n="nav.expenses">Expenses</span>
                 </a>
             </li>
             <li>
                 <a href="./help.html">
                     <i class="fas fa-question-circle"></i>
-                    <span>Help</span>
+                    <span data-i18n="nav.help">Help</span>
                 </a>
             </li>
             <li class="logout">
                 <a href="./about.html">
                     <i class="fa-solid fa-users-line"></i>
-                    <span>Meet the Developer</span>
+                    <span data-i18n="nav.developer">Meet the Developer</span>
                 </a>
             </li>
         </ul>
@@ -65,17 +65,24 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" data-i18n-aria-label="action.openNav" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="header-title">
                 <!-- <span>Primary</span> -->
-                <h2>Products</h2>
+                <h2 data-i18n="products.title">Products</h2>
             </div>
             <div class="user-info">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="search" id="searchInput" placeholder="Search">
+                    <input type="search" id="searchInput" placeholder="Search" data-i18n-placeholder="action.search">
+                </div>
+                <div class="language-switcher">
+                    <label for="language-select" data-i18n="language.label">Language</label>
+                    <select id="language-select" class="language-select" aria-label="Language" data-i18n-aria-label="language.label">
+                        <option value="en" data-i18n="language.english">English</option>
+                        <option value="zh" data-i18n="language.chinese">中文</option>
+                    </select>
                 </div>
                 <!-- <i class="fas fa-user-alt fa-xl"></i> -->
             </div>
@@ -83,10 +90,10 @@
 
         <div class="table-wrapper">
             <div class="product-title">
-                <h3 class="main-title">Products</h3>
+                <h3 class="main-title" data-i18n="products.title">Products</h3>
                 <div class="product-button">
-                    <button class="add-button" onclick="openForm()">Add Product</button>
-                    <button class="download-button" onclick="exportToCSV()">Download CSV</button>
+                    <button class="add-button" onclick="openForm()" data-i18n="products.addProduct">Add Product</button>
+                    <button class="download-button" onclick="exportToCSV()" data-i18n="action.downloadCsv">Download CSV</button>
                 </div>
             </div>
             <p id="page-feedback" class="page-feedback" role="status" aria-live="polite"></p>
@@ -94,12 +101,12 @@
                 <form class="form-container" id="product-form" onsubmit="addOrUpdate(event)">
                     <div class="form-columns">
                         <div class="first-col">
-                            <label for="product-id"><b>Product ID: </b></label>
+                            <label for="product-id"><b data-i18n="products.productId">Product ID</b><b>: </b></label>
                             <input type="text" id="product-id" placeholder="PD001" required>
                         
-                            <label for="product-name"><b>Product Name</b></label>
+                            <label for="product-name"><b data-i18n="products.productName">Product Name</b></label>
                             <select name="product-name" id="product-name" required>
-                                <option value="" disabled selected hidden>Choose a product</option>
+                                <option value="" disabled selected hidden data-i18n="products.chooseProduct">Choose a product</option>
                                 <optgroup label="Hats">
                                     <option value="Baseball caps">Baseball caps</option>
                                     <option value="Snapbacks">Snapbacks</option>
@@ -128,13 +135,13 @@
                                 </optgroup>
                             </select>
     
-                            <label for="product-desc"><b>Product Description:</b></label>
+                            <label for="product-desc"><b data-i18n="products.productDescription">Product Description:</b></label>
                             <input type="text" id="product-desc" placeholder="Travel Mug" required>
                         </div>
                         <div class="second-col">
-                            <label for="product-cat"><b>Product Category:</b></label>
+                            <label for="product-cat"><b data-i18n="products.productCategory">Product Category:</b></label>
                             <select name="product-cat" id="product-cat" required>
-                                <option value="" disabled selected>Choose a category</option>
+                                <option value="" disabled selected data-i18n="products.chooseCategory">Choose a category</option>
                                 <option value="Clothing">Clothing</option>
                                 <option value="Drinkware">Drinkware</option>
                                 <option value="Accessories">Accessories</option>
@@ -142,17 +149,17 @@
                                 <option value="Home decor">Home decor</option>
                             </select>
     
-                            <label for="product-price"><b>Product Price:</b></label>
+                            <label for="product-price"><b data-i18n="products.productPrice">Product Price:</b></label>
                             <input type="number" id="product-price" placeholder="$0.00" min="0.00" max="10000.00" step="0.01" required>
     
-                            <label for="product-sold"><b>Number of Units Sold:</b></label>
+                            <label for="product-sold"><b data-i18n="products.unitsSoldLabel">Number of Units Sold:</b></label>
                             <input type="number" id="product-sold" placeholder="10" required>
                         </div>
                     </div>
                     
                     <div class="button-col">
-                        <button type="submit" class="btn" id="submitBtn">Add</button>
-                        <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+                        <button type="submit" class="btn" id="submitBtn" data-i18n="action.add">Add</button>
+                        <button type="button" class="btn cancel" onclick="closeForm()" data-i18n="action.cancel">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -160,13 +167,13 @@
                 <table id="product-table">
                     <thead>
                         <tr>
-                            <th><button type="button" class="sort-button" onclick="sortTable('prodID')">Product ID</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('prodName')">Product Name</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('prodDesc')">Description</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('prodCat')">Category</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('prodPrice')">Price</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('prodSold')">Units Sold</button></th>
-                            <th>Action</th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodID')" data-i18n="products.productId">Product ID</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodName')" data-i18n="products.productName">Product Name</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodDesc')" data-i18n="products.description">Description</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodCat')" data-i18n="products.category">Category</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodPrice')" data-i18n="products.price">Price</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('prodSold')" data-i18n="products.unitsSold">Units Sold</button></th>
+                            <th data-i18n="table.action">Action</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -182,6 +189,7 @@
     </div>
     </div>
 
+    <script src="./i18n.js"></script>
     <script src="./products.js"></script>
 </body>
 </html>

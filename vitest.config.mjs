@@ -10,7 +10,7 @@ export default defineConfig({
       reportsDirectory: "coverage",
       reporter: ["text", "html", "lcov", "json-summary"],
       all: true,
-      include: ["script.js", "products.js", "orders.js", "finances.js", "help.js"],
+      include: ["script.js", "products.js", "orders.js", "finances.js", "help.js", "i18n.js"],
       exclude: ["tests/**", "coverage/**", "node_modules/**"]
     }
   }

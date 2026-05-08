@@ -19,19 +19,26 @@ function closeForm() {
     document.getElementById("transaction-form").style.display = "none";
 }
 
+function translate(key, fallback, params = {}) {
+    return typeof t === "function" ? t(key, params) : fallback.replace(/\{(\w+)\}/g, (_, param) => params[param] ?? "");
+}
 
 let transactions = [];
 
 function resetFormState() {
-    document.getElementById("transaction-form").reset();
-    document.getElementById("submitBtn").textContent = "Add";
+    const transactionForm = document.getElementById("transaction-form");
+    transactionForm.dataset.mode = "add";
+    transactionForm.reset();
+    const submitButton = document.getElementById("submitBtn");
+    submitButton.dataset.i18n = "action.add";
+    submitButton.textContent = translate("action.add", "Add");
 }
 
 function getValidatedTransactionFormData() {
     const form = document.getElementById("transaction-form");
 
     if (!form.checkValidity()) {
-        showFeedback("Please complete the required expense fields before submitting.", "error");
+        showFeedback(translate("feedback.requiredExpense", "Please complete the required expense fields before submitting."), "error");
         form.reportValidity();
         return null;
     }
@@ -44,12 +51,12 @@ function getValidatedTransactionFormData() {
     };
 
     if (!transaction.trDate || !transaction.trCategory || !transaction.trNotes) {
-        showFeedback("Please complete the required expense fields before submitting.", "error");
+        showFeedback(translate("feedback.requiredExpense", "Please complete the required expense fields before submitting."), "error");
         return null;
     }
 
     if (!Number.isFinite(transaction.trAmount) || transaction.trAmount < 0) {
-        showFeedback("Expense amount must be a valid non-negative number.", "error");
+        showFeedback(translate("feedback.expenseAmount", "Expense amount must be a valid non-negative number."), "error");
         return null;
     }
 
@@ -180,10 +187,10 @@ window.onload = function () {
 }
 
 function addOrUpdate(event) {
-    let type = document.getElementById("submitBtn").textContent;
-    if (type === 'Add') {
+    const type = document.getElementById("transaction-form").dataset.mode || "add";
+    if (type === 'add') {
         newTransaction(event);
-    } else if (type === 'Update'){
+    } else if (type === 'update'){
         const trId = document.getElementById("tr-id").value;
         updateTransaction(+trId); // convert to number
     }
@@ -213,7 +220,7 @@ function newTransaction(event) {
     displayExpenses();
   
     resetFormState();
-    showFeedback(`Expense ${trID} added successfully.`);
+    showFeedback(translate("feedback.expenseAdded", "Expense {id} added successfully.", { id: trID }));
 }
 
 
@@ -267,7 +274,7 @@ function displayExpenses() {
         .reduce((total, transaction) => total + transaction.trAmount,0);
 
     resultElement.innerHTML = `
-        <span>Total Expenses: $${totalExpenses.toFixed(2)}</span>
+        <span>${translate("finances.totalExpenses", "Total Expenses")}: $${totalExpenses.toFixed(2)}</span>
     `;
 }
 
@@ -280,7 +287,10 @@ function editRow(trID) {
     document.getElementById("tr-amount").value = trToEdit.trAmount;
     document.getElementById("tr-notes").value = trToEdit.trNotes;
   
-    document.getElementById("submitBtn").textContent = "Update";
+    document.getElementById("transaction-form").dataset.mode = "update";
+    const submitButton = document.getElementById("submitBtn");
+    submitButton.dataset.i18n = "action.update";
+    submitButton.textContent = translate("action.update", "Update");
 
     document.getElementById("transaction-form").style.display = "block";
   }
@@ -294,7 +304,7 @@ function deleteTransaction(trID) {
         localStorage.setItem("bizTrackTransactions", JSON.stringify(transactions));
 
         renderTransactions(transactions);
-        showFeedback(`Expense ${trID} deleted successfully.`);
+        showFeedback(translate("feedback.expenseDeleted", "Expense {id} deleted successfully.", { id: trID }));
     }
 }
 
@@ -320,7 +330,7 @@ function deleteTransaction(trID) {
         renderTransactions(transactions);
 
         resetFormState();
-        showFeedback(`Expense ${trID} updated successfully.`);
+        showFeedback(translate("feedback.expenseUpdated", "Expense {id} updated successfully.", { id: trID }));
     }
 }
 
@@ -376,7 +386,7 @@ function performSearch() {
     }
 
     if (visibleCount === 0) {
-        showFeedback("No matching expenses found.", "info");
+        showFeedback(translate("feedback.noExpenses", "No matching expenses found."), "info");
         return;
     }
 
@@ -407,7 +417,7 @@ function exportToCSV() {
     link.click();
   
     document.body.removeChild(link);
-    showFeedback("Expenses exported to CSV.");
+    showFeedback(translate("feedback.expensesExported", "Expenses exported to CSV."));
 }
   
 function escapeCSVValue(value) {

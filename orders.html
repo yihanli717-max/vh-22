@@ -19,7 +19,7 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+            <button type="button" class="icon-button" aria-label="Close navigation" data-i18n-aria-label="action.closeNav" onclick="closeSidebar()">
                 <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
             </button>
         </div>
@@ -27,37 +27,37 @@
             <li>
                 <a href="./index.html">
                     <i class="fa-solid fa-gauge-high"></i>
-                    <span>Dashboard</span>
+                    <span data-i18n="nav.dashboard">Dashboard</span>
                 </a>
             </li>
             <li>
                 <a href="./products.html">
                     <i class="fas fa-dolly"></i>
-                    <span>Products</span>
+                    <span data-i18n="nav.products">Products</span>
                 </a>
             </li>
             <li class="active">
                 <a href="./orders.html">
                     <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
+                    <span data-i18n="nav.orders">Orders</span>
                 </a>
             </li>
             <li>
                 <a href="./finances.html">
                     <i class="fas fa-sack-dollar"></i>
-                    <span>Expenses</span>
+                    <span data-i18n="nav.expenses">Expenses</span>
                 </a>
             </li>
             <li>
                 <a href="./help.html">
                     <i class="fas fa-question-circle"></i>
-                    <span>Help</span>
+                    <span data-i18n="nav.help">Help</span>
                 </a>
             </li>
             <li class="logout">
                 <a href="./about.html">
                     <i class="fa-solid fa-users-line"></i>
-                    <span>Meet the Developer</span>
+                    <span data-i18n="nav.developer">Meet the Developer</span>
                 </a>
             </li>
         </ul>
@@ -65,17 +65,24 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" data-i18n-aria-label="action.openNav" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="header-title">
                 <!-- <span>Primary</span> -->
-                <h2>Orders</h2>
+                <h2 data-i18n="orders.title">Orders</h2>
             </div>
             <div class="user-info">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="search" id="searchInput" placeholder="Search">
+                    <input type="search" id="searchInput" placeholder="Search" data-i18n-placeholder="action.search">
+                </div>
+                <div class="language-switcher">
+                    <label for="language-select" data-i18n="language.label">Language</label>
+                    <select id="language-select" class="language-select" aria-label="Language" data-i18n-aria-label="language.label">
+                        <option value="en" data-i18n="language.english">English</option>
+                        <option value="zh" data-i18n="language.chinese">中文</option>
+                    </select>
                 </div>
                 <!-- <i class="fas fa-user-alt fa-xl"></i> -->
             </div>
@@ -83,10 +90,10 @@
 
         <div class="table-wrapper">
             <div class="product-title">
-                <h3 class="main-title">Orders</h3>
+                <h3 class="main-title" data-i18n="orders.title">Orders</h3>
                 <div class="order-button">
-                    <button class="add-button" onclick="openForm()">Add Order</button>
-                    <button class="download-button" onclick="exportToCSV()">Export to CSV</button>
+                    <button class="add-button" onclick="openForm()" data-i18n="orders.addOrder">Add Order</button>
+                    <button class="download-button" onclick="exportToCSV()" data-i18n="action.exportCsv">Export to CSV</button>
                 </div>
             </div>
             <p id="page-feedback" class="page-feedback" role="status" aria-live="polite"></p>
@@ -96,15 +103,15 @@
                     <div class="form-columns">
 
                         <div class="order-first-col">
-                            <label for="order-id"><b>Order ID: </b></label>
+                            <label for="order-id"><b data-i18n="orders.orderId">Order ID</b><b>: </b></label>
                             <input type="text" id="order-id" placeholder="1001" required>
 
-                            <label for="order-date"><b>Order Date: </b></label>
+                            <label for="order-date"><b data-i18n="orders.orderDate">Order Date</b><b>: </b></label>
                             <input type="date" id="order-date" required>
 
-                            <label for="item-name"><b>Item Name: </b></label>
+                            <label for="item-name"><b data-i18n="orders.itemName">Item Name</b><b>: </b></label>
                             <select name="item-name" id="item-name" required>
-                                <option value="" disabled selected hidden>Choose an item</option>
+                                <option value="" disabled selected hidden data-i18n="orders.chooseItem">Choose an item</option>
                                 <optgroup label="Hats">
                                     <option value="Baseball caps">Baseball caps</option>
                                     <option value="Snapbacks">Snapbacks</option>
@@ -135,37 +142,37 @@
                         </div>
 
                         <div class="order-second-col">
-                            <label for="item-price"><b>Item Price:</b></label>
+                            <label for="item-price"><b data-i18n="orders.itemPrice">Item Price</b><b>:</b></label>
                             <input type="number" id="item-price" placeholder="$0.00" min="0.00" max="10000.00" step="0.01" required>
 
-                            <label for="qty-bought"><b>Quantity Bought:</b></label>
+                            <label for="qty-bought"><b data-i18n="orders.quantityBought">Quantity Bought:</b></label>
                             <input type="number" id="qty-bought" placeholder="1" required>
 
-                            <label for="shipping"><b>Shipping fee:</b></label>
+                            <label for="shipping"><b data-i18n="orders.shippingFeeLabel">Shipping fee:</b></label>
                             <input type="number" id="shipping" placeholder="$2.00" min="0.00" max="10000.00" step="0.01" required>
                         </div>
 
                         <div class="order-third-col">
-                            <label for="taxes"><b>Taxes (VAT/GST/HST):</b></label>
+                            <label for="taxes"><b data-i18n="orders.taxesLabel">Taxes (VAT/GST/HST):</b></label>
                             <input type="number" id="taxes" placeholder="$2.00" min="0.00" max="10000.00" step="0.01" required>
 
-                            <label for="order-status"><b>Order Status:</b></label>
+                            <label for="order-status"><b data-i18n="orders.orderStatus">Order Status</b><b>:</b></label>
                             <select name="order-status" id="order-status" required>
-                                <option value="" disabled selected hidden>Choose a status</option>
+                                <option value="" disabled selected hidden data-i18n="orders.chooseStatus">Choose a status</option>
                                 <option value="Pending" class="pending">Pending</option>
                                 <option value="Processing" class="processing">Processing</option>
                                 <option value="Shipped" class="shipped">Shipped</option>
                                 <option value="Delivered" class="delivered">Delivered</option>
                             </select>
 
-                            <label for="order-total"><b>Total Order Amount: <small>(Calculated)</small></b></label>
+                            <label for="order-total"><b data-i18n="orders.totalOrderAmount">Total Order Amount:</b> <small data-i18n="orders.calculated">(Calculated)</small></label>
                             <input type="number" id="order-total" placeholder="$0.00" min="0.00" max="10000.00" step="0.01" disabled>
                         </div>
                     </div>
                     
                     <div class="button-col">
-                        <button type="submit" class="btn" id="submitBtn">Add</button>
-                        <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+                        <button type="submit" class="btn" id="submitBtn" data-i18n="action.add">Add</button>
+                        <button type="button" class="btn cancel" onclick="closeForm()" data-i18n="action.cancel">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -174,16 +181,16 @@
                 <table id="order-table">
                     <thead>
                         <tr>
-                            <th><button type="button" class="sort-button" onclick="sortTable('orderID')">Order ID</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('orderDate')">Order Date</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('itemName')">Item Name</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('itemPrice')">Item Price</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('qtyBought')">Qty</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('shipping')">Shipping Fee</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('taxes')">Taxes</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('orderTotal')">Order Total</button></th>
-                            <th><button type="button" class="sort-button" onclick="sortTable('orderStatus')">Order Status</button></th>
-                            <th>Action</th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderID')" data-i18n="orders.orderId">Order ID</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderDate')" data-i18n="orders.orderDate">Order Date</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('itemName')" data-i18n="orders.itemName">Item Name</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('itemPrice')" data-i18n="orders.itemPrice">Item Price</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('qtyBought')" data-i18n="orders.quantity">Qty</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('shipping')" data-i18n="orders.shippingFee">Shipping Fee</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('taxes')" data-i18n="orders.taxes">Taxes</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderTotal')" data-i18n="orders.orderTotal">Order Total</button></th>
+                            <th><button type="button" class="sort-button" onclick="sortTable('orderStatus')" data-i18n="orders.orderStatus">Order Status</button></th>
+                            <th data-i18n="table.action">Action</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -200,6 +207,7 @@
         </div>
     </div>
 
+    <script src="./i18n.js"></script>
     <script src="./orders.js"></script>
 </body>
 </html>

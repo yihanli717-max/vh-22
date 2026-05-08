@@ -19,6 +19,9 @@ function closeForm() {
     document.getElementById("product-form").style.display = "none";
 }
 
+function translate(key, fallback, params = {}) {
+  return typeof t === "function" ? t(key, params) : fallback.replace(/\{(\w+)\}/g, (_, param) => params[param] ?? "");
+}
 
 let products = [];
 
@@ -31,8 +34,11 @@ function setProductIdReadOnly(isReadOnly) {
 function resetFormState() {
   const productForm = document.getElementById("product-form");
   delete productForm.dataset.editingId;
+  productForm.dataset.mode = "add";
   document.getElementById("product-form").reset();
-  document.getElementById("submitBtn").textContent = "Add";
+  const submitButton = document.getElementById("submitBtn");
+  submitButton.dataset.i18n = "action.add";
+  submitButton.textContent = translate("action.add", "Add");
   setProductIdReadOnly(false);
 }
 
@@ -40,7 +46,7 @@ function getValidatedProductFormData() {
   const form = document.getElementById("product-form");
 
   if (!form.checkValidity()) {
-    showFeedback("Please complete the required product fields before submitting.", "error");
+    showFeedback(translate("feedback.requiredProduct", "Please complete the required product fields before submitting."), "error");
     form.reportValidity();
     return null;
   }
@@ -55,17 +61,17 @@ function getValidatedProductFormData() {
   };
 
   if (!product.prodID || !product.prodName || !product.prodDesc || !product.prodCat) {
-    showFeedback("Please complete the required product fields before submitting.", "error");
+    showFeedback(translate("feedback.requiredProduct", "Please complete the required product fields before submitting."), "error");
     return null;
   }
 
   if (!Number.isFinite(product.prodPrice) || product.prodPrice < 0) {
-    showFeedback("Product price must be a valid non-negative number.", "error");
+    showFeedback(translate("feedback.productPrice", "Product price must be a valid non-negative number."), "error");
     return null;
   }
 
   if (!Number.isInteger(product.prodSold) || product.prodSold < 0) {
-    showFeedback("Units sold must be a valid non-negative whole number.", "error");
+    showFeedback(translate("feedback.productSold", "Units sold must be a valid non-negative whole number."), "error");
     return null;
   }
 
@@ -184,10 +190,10 @@ function init() {
 }
 
 function addOrUpdate(event) {
-  let type = document.getElementById("submitBtn").textContent;
-  if (type === 'Add') {
+  const type = document.getElementById("product-form").dataset.mode || "add";
+  if (type === 'add') {
       newProduct(event);
-  } else if (type === 'Update'){
+  } else if (type === 'update'){
       const prodID = document.getElementById("product-form").dataset.editingId;
       updateProduct(prodID);
   }
@@ -203,7 +209,7 @@ function newProduct(event) {
   }
 
   if (isDuplicateID(product.prodID, null)) {
-    showFeedback("Product ID already exists. Please use a unique ID.", "error");
+    showFeedback(translate("feedback.productDuplicate", "Product ID already exists. Please use a unique ID."), "error");
     return;
   }
 
@@ -213,7 +219,7 @@ function newProduct(event) {
   localStorage.setItem("bizTrackProducts", JSON.stringify(products));
 
   resetFormState();
-  showFeedback(`Product ${product.prodID} added successfully.`);
+  showFeedback(translate("feedback.productAdded", "Product {id} added successfully.", { id: product.prodID }));
 }
 
 
@@ -271,7 +277,10 @@ function editRow(prodID) {
   document.getElementById("product-sold").value = productToEdit.prodSold;
 
   productForm.dataset.editingId = productToEdit.prodID;
-  document.getElementById("submitBtn").textContent = "Update";
+  productForm.dataset.mode = "update";
+  const submitButton = document.getElementById("submitBtn");
+  submitButton.dataset.i18n = "action.update";
+  submitButton.textContent = translate("action.update", "Update");
   setProductIdReadOnly(true);
 
   productForm.style.display = "block";
@@ -286,7 +295,7 @@ function deleteProduct(prodID) {
       localStorage.setItem("bizTrackProducts", JSON.stringify(products));
 
       renderProducts(products);
-      showFeedback(`Product ${prodID} deleted successfully.`);
+      showFeedback(translate("feedback.productDeleted", "Product {id} deleted successfully.", { id: prodID }));
   }
 }
 
@@ -309,7 +318,7 @@ function updateProduct(prodID) {
         renderProducts(products);
 
         resetFormState();
-        showFeedback(`Product ${updatedProduct.prodID} updated successfully.`);
+        showFeedback(translate("feedback.productUpdated", "Product {id} updated successfully.", { id: updatedProduct.prodID }));
     }
 }
 
@@ -368,7 +377,7 @@ function performSearch() {
     }
 
     if (visibleCount === 0) {
-        showFeedback("No matching products found.", "info");
+        showFeedback(translate("feedback.noProducts", "No matching products found."), "info");
         return;
     }
 
@@ -400,7 +409,7 @@ function exportToCSV() {
   link.click();
 
   document.body.removeChild(link);
-  showFeedback("Products exported to CSV.");
+  showFeedback(translate("feedback.productsExported", "Products exported to CSV."));
 }
 
 function escapeCSVValue(value) {

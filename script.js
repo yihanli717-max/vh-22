@@ -9,6 +9,10 @@ function closeSidebar() {
   document.getElementById('sidebar').style.display = 'none';
 }
 
+function translate(key, fallback, params = {}) {
+  return typeof t === "function" ? t(key, params) : fallback.replace(/\{(\w+)\}/g, (_, param) => params[param] ?? "");
+}
+
 function persistFallback(key, fallbackData) {
   try {
     localStorage.setItem(key, JSON.stringify(fallbackData));
@@ -147,25 +151,29 @@ window.onload = function () {
   const ordDiv = document.getElementById('num-orders');
 
   revDiv.innerHTML = `
-      <span class="title">Revenue</span>
+      <span class="title">${translate("dashboard.revenue", "Revenue")}</span>
       <span class="amount-value">$${totalRevenues.toFixed(2)}</span> 
   `;
 
   expDiv.innerHTML = `
-    <span class="title">Expenses</span>
+    <span class="title">${translate("dashboard.expenses", "Expenses")}</span>
     <span class="amount-value">$${totalExpenses.toFixed(2)}</span>
   `;
 
   balDiv.innerHTML = `
-    <span class="title">Balance</span>
+    <span class="title">${translate("dashboard.balance", "Balance")}</span>
     <span class="amount-value">$${totalBalance.toFixed(2)}</span>
   `;
 
   ordDiv.innerHTML = `
-    <span class="title">Orders</span>
+    <span class="title">${translate("dashboard.orders", "Orders")}</span>
     <span class="amount-value">${numOrders}</span>
   `;
 };
+
+function renderDashboardSummary() {
+  window.onload();
+}
 
 function calculateExpTotal(transactions) {
   return transactions.reduce((total, transaction) => total + transaction.trAmount, 0);

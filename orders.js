@@ -19,6 +19,10 @@ function closeForm() {
     document.getElementById("order-form").style.display = "none";
 }
 
+function translate(key, fallback, params = {}) {
+    return typeof t === "function" ? t(key, params) : fallback.replace(/\{(\w+)\}/g, (_, param) => params[param] ?? "");
+}
+
 let orders = [];
 
 function setOrderIdReadOnly(isReadOnly) {
@@ -30,8 +34,11 @@ function setOrderIdReadOnly(isReadOnly) {
 function resetFormState() {
     const orderForm = document.getElementById("order-form");
     delete orderForm.dataset.editingId;
+    orderForm.dataset.mode = "add";
     document.getElementById("order-form").reset();
-    document.getElementById("submitBtn").textContent = "Add";
+    const submitButton = document.getElementById("submitBtn");
+    submitButton.dataset.i18n = "action.add";
+    submitButton.textContent = translate("action.add", "Add");
     setOrderIdReadOnly(false);
 }
 
@@ -39,7 +46,7 @@ function getValidatedOrderFormData() {
     const form = document.getElementById("order-form");
 
     if (!form.checkValidity()) {
-        showFeedback("Please complete the required order fields before submitting.", "error");
+        showFeedback(translate("feedback.requiredOrder", "Please complete the required order fields before submitting."), "error");
         form.reportValidity();
         return null;
     }
@@ -61,22 +68,22 @@ function getValidatedOrderFormData() {
     };
 
     if (!order.orderID || !order.orderDate || !order.itemName || !order.orderStatus) {
-        showFeedback("Please complete the required order fields before submitting.", "error");
+        showFeedback(translate("feedback.requiredOrder", "Please complete the required order fields before submitting."), "error");
         return null;
     }
 
     if (!Number.isFinite(itemPrice) || itemPrice < 0) {
-        showFeedback("Item price must be a valid non-negative number.", "error");
+        showFeedback(translate("feedback.itemPrice", "Item price must be a valid non-negative number."), "error");
         return null;
     }
 
     if (!Number.isInteger(qtyBought) || qtyBought <= 0) {
-        showFeedback("Quantity bought must be a valid whole number greater than zero.", "error");
+        showFeedback(translate("feedback.quantity", "Quantity bought must be a valid whole number greater than zero."), "error");
         return null;
     }
 
     if (!Number.isFinite(shipping) || shipping < 0 || !Number.isFinite(taxes) || taxes < 0) {
-        showFeedback("Shipping and taxes must be valid non-negative numbers.", "error");
+        showFeedback(translate("feedback.shippingTaxes", "Shipping and taxes must be valid non-negative numbers."), "error");
         return null;
     }
 
@@ -216,10 +223,10 @@ window.onload = function () {
 }
 
 function addOrUpdate(event) {
-    let type = document.getElementById("submitBtn").textContent;
-    if (type === 'Add') {
+    const type = document.getElementById("order-form").dataset.mode || "add";
+    if (type === 'add') {
         newOrder(event);
-    } else if (type === 'Update'){
+    } else if (type === 'update'){
         const orderID = document.getElementById("order-form").dataset.editingId;
         updateOrder(orderID);
     }
@@ -236,7 +243,7 @@ function newOrder(event) {
   }
 
   if (isDuplicateID(order.orderID, null)) {
-    showFeedback("Order ID already exists. Please use a unique ID.", "error");
+    showFeedback(translate("feedback.orderDuplicate", "Order ID already exists. Please use a unique ID."), "error");
     return;
   }
 
@@ -246,7 +253,7 @@ function newOrder(event) {
   localStorage.setItem("bizTrackOrders", JSON.stringify(orders));
 
   resetFormState();
-  showFeedback(`Order ${order.orderID} added successfully.`);
+  showFeedback(translate("feedback.orderAdded", "Order {id} added successfully.", { id: order.orderID }));
 }
 
 
@@ -325,7 +332,7 @@ function displayRevenue() {
         .reduce((total, order) => total + order.orderTotal, 0);
 
     resultElement.innerHTML = `
-        <span>Total Revenue: $${totalRevenue.toFixed(2)}</span>
+        <span>${translate("orders.totalRevenue", "Total Revenue")}: $${totalRevenue.toFixed(2)}</span>
     `;
 }
 
@@ -344,7 +351,10 @@ function editRow(orderID) {
     document.getElementById("order-status").value = orderToEdit.orderStatus;
 
     orderForm.dataset.editingId = orderToEdit.orderID;
-    document.getElementById("submitBtn").textContent = "Update";
+    orderForm.dataset.mode = "update";
+    const submitButton = document.getElementById("submitBtn");
+    submitButton.dataset.i18n = "action.update";
+    submitButton.textContent = translate("action.update", "Update");
     setOrderIdReadOnly(true);
 
     orderForm.style.display = "block";
@@ -359,7 +369,7 @@ function deleteOrder(orderID) {
       localStorage.setItem("bizTrackOrders", JSON.stringify(orders));
 
       renderOrders(orders);
-      showFeedback(`Order ${orderID} deleted successfully.`);
+      showFeedback(translate("feedback.orderDeleted", "Order {id} deleted successfully.", { id: orderID }));
   }
 }
 
@@ -382,7 +392,7 @@ function updateOrder(orderID) {
         renderOrders(orders);
 
         resetFormState();
-        showFeedback(`Order ${updatedOrder.orderID} updated successfully.`);
+        showFeedback(translate("feedback.orderUpdated", "Order {id} updated successfully.", { id: updatedOrder.orderID }));
     }
 }
 
@@ -442,7 +452,7 @@ function performSearch() {
     }
 
     if (visibleCount === 0) {
-        showFeedback("No matching orders found.", "info");
+        showFeedback(translate("feedback.noOrders", "No matching orders found."), "info");
         return;
     }
 
@@ -477,7 +487,7 @@ function exportToCSV() {
     link.click();
   
     document.body.removeChild(link);
-    showFeedback("Orders exported to CSV.");
+    showFeedback(translate("feedback.ordersExported", "Orders exported to CSV."));
 }
   
 function escapeCSVValue(value) {
