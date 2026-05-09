@@ -145,6 +145,36 @@
         </div>
     </div>
 
+    <div id="cookie-banner">
+        This website uses cookies to ensure you get the best experience. 
+        <button id="accept-cookies" aria-label="Accept cookies">Accept</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const banner = document.getElementById('cookie-banner');
+            const acceptButton = document.getElementById('accept-cookies');
+            if (!banner) return;
+
+            // 保证初始隐藏（styles.css 中已有 display:none，这里是保险措施）
+            banner.style.display = 'none';
+            banner.setAttribute('aria-hidden', 'true');
+
+            const cookiesAccepted = localStorage.getItem('cookiesAccepted');
+            if (!cookiesAccepted) {
+                banner.style.display = 'block';
+                banner.setAttribute('aria-hidden', 'false');
+            }
+
+            if (acceptButton) {
+                acceptButton.addEventListener('click', () => {
+                    localStorage.setItem('cookiesAccepted', 'true');
+                    banner.style.display = 'none';
+                    banner.setAttribute('aria-hidden', 'true');
+                });
+            }
+        });
+    </script>
+
     <!-- Apex Charts -->
     <script src="./i18n.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.45.2/apexcharts.min.js"></script>
