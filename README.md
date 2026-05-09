@@ -31,6 +31,35 @@ From understanding how JavaScript functions work to making web pages interactive
 
 This project represents my growth, determination, and love for coding. I hope you enjoy checking it out as much as I enjoyed making it!
 
+## Improvement
+
+Since the original fork (starting at commit c56355fb and onward), a sequence of maintenance, security, accessibility, and UX improvements were applied. Key highlights:
+
+- Security
+  - Fixed DOM XSS by avoiding unsafe innerHTML and using textContent-based DOM construction.
+  - Mitigated CSV injection by escaping values and neutralizing formula-like prefixes in exports.
+- Data integrity & robustness
+  - Added a safe localStorage reader that validates parsed data and restores fallback seed data when storage is missing or malformed.
+  - Hardened parsing and error handling to avoid crashes on corrupted cached data.
+- Logic & correctness
+  - Ensured new transaction IDs are unique using a max-id scan to avoid ID reuse after deletions.
+  - Prevented unintended primary-key edits during update flows.
+- Accessibility & keyboard support
+  - Replaced non-interactive clickable elements with semantic buttons and added focus-visible styles for keyboard users.
+- UX & feedback
+  - Added inline, non-modal feedback messages for add/update/delete/export actions instead of blocking alerts.
+  - Reset stale form state when opening/closing forms to avoid accidental edits.
+- Input validation & reliability
+  - Strengthened client-side validation: trimmed inputs, checked numeric ranges and integer constraints, and used form checkValidity where appropriate.
+- Testing & CI
+  - Added unit tests and CI checks to prevent regressions and ensure key behaviors remain stable across changes.
+- Internationalization & language switch
+  - Implemented a language switch control allowing switching UI text; language preference persists (e.g., via localStorage) so the app can present localized labels and messages.
+- Privacy & consent
+  - Added a cookie/consent banner to inform users about local storage usage and to capture consent for analytics or persisted preferences.
+
+These changes aim to improve security, accessibility, reliability, and maintainability while preserving the original app flows.
+
 ## 💻 Tech Stack Used
 
 - HTML
