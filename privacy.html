@@ -17,7 +17,7 @@
                 <i class="fas fa-b"></i>
                 <span>BizTrack</span>
             </a>
-            <button type="button" class="icon-button" aria-label="Close navigation" onclick="closeSidebar()">
+            <button type="button" class="icon-button" aria-label="Close navigation" data-i18n-aria-label="action.closeNav" onclick="closeSidebar()">
                 <i class="fa-solid fa-xmark" title="Close" aria-hidden="true"></i>
             </button>
         </div>
@@ -63,18 +63,18 @@
 
     <div class="main-content">
         <div class="header-wrapper">
-            <button type="button" class="menu-icon" aria-label="Open navigation" onclick="openSidebar()">
+            <button type="button" class="menu-icon" aria-label="Open navigation" data-i18n-aria-label="action.openNav" onclick="openSidebar()">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="header-title">
-                <h2>Privacy Policy</h2>
+                <h2 data-i18n="privacy.title">Privacy Policy</h2>
             </div>
             <div class="user-info">
                 <div class="language-switcher">
-                    <label for="language-select">Language</label>
-                    <select id="language-select" class="language-select" aria-label="Language">
-                        <option value="en">English</option>
-                        <option value="zh">中文</option>
+                    <label for="language-select" data-i18n="language.label">Language</label>
+                    <select id="language-select" class="language-select" aria-label="Language" data-i18n-aria-label="language.label">
+                        <option value="en" data-i18n="language.english">English</option>
+                        <option value="zh" data-i18n="language.chinese">中文</option>
                     </select>
                 </div>
             </div>
@@ -82,43 +82,43 @@
 
         <div class="about-container">
             <section>
-                <p class="page-feedback">Last updated: 2026-05-10</p>
 
                 <article>
-                    <h4>Introduction</h4>
-                    <p>This Privacy Policy explains how BizTrack collects, uses, discloses and safeguards your information when you visit our website.</p>
+                    <h4 data-i18n="privacy.introduction.title">Introduction</h4>
+                    <p data-i18n="privacy.introduction.body">This Privacy Policy explains how BizTrack collects, uses, discloses and safeguards your information when you visit our website.</p>
 
-                    <h4>Information We Collect</h4>
+                    <h4 data-i18n="privacy.information.title">Information We Collect</h4>
                     <ul>
-                        <li>Information you provide directly (e.g., contact form, email).</li>
-                        <li>Usage data collected automatically (e.g., pages visited, IP address, device and browser information).</li>
-                        <li>Cookies and similar technologies to improve site functionality and analytics.</li>
+                        <li data-i18n="privacy.information.item1">Information you provide directly (e.g., contact form, email).</li>
+                        <li data-i18n="privacy.information.item2">Usage data collected automatically (e.g., pages visited, IP address, device and browser information).</li>
+                        <li data-i18n="privacy.information.item3">Cookies and similar technologies to improve site functionality and analytics.</li>
                     </ul>
 
-                    <h4>How We Use Your Information</h4>
-                    <p>We use collected information to operate and improve the website, respond to inquiries, provide features, analyze usage patterns, and comply with legal obligations.</p>
+                    <h4 data-i18n="privacy.use.title">How We Use Your Information</h4>
+                    <p data-i18n="privacy.use.body">We use collected information to operate and improve the website, respond to inquiries, provide features, analyze usage patterns, and comply with legal obligations.</p>
 
-                    <h4>Cookies</h4>
-                    <p>Cookies are small text files stored on your device. We use cookies for essential site functionality, to remember preferences (such as language), and to collect anonymous analytics. You can disable cookies in your browser settings, but some features may not work properly.</p>
+                    <h4 data-i18n="privacy.cookies.title">Cookies</h4>
+                    <p data-i18n="privacy.cookies.body">Cookies are small text files stored on your device. We use cookies for essential site functionality, to remember preferences (such as language), and to collect anonymous analytics. You can disable cookies in your browser settings, but some features may not work properly.</p>
 
-                    <h4>Third-party Services</h4>
-                    <p>We may use third-party services (e.g., analytics providers). These providers have their own privacy practices — please refer to their policies for details.</p>
+                    <h4 data-i18n="privacy.thirdparty.title">Third-party Services</h4>
+                    <p data-i18n="privacy.thirdparty.body">We may use third-party services (e.g., analytics providers). These providers have their own privacy practices — please refer to their policies for details.</p>
 
-                    <h4>Data Retention</h4>
-                    <p>We retain personal data only as long as necessary to fulfill the purposes described in this policy or to comply with legal obligations.</p>
+                    <h4 data-i18n="privacy.retention.title">Data Retention</h4>
+                    <p data-i18n="privacy.retention.body">We retain personal data only as long as necessary to fulfill the purposes described in this policy or to comply with legal obligations.</p>
 
-                    <h4>Your Rights</h4>
-                    <p>Depending on your jurisdiction, you may have rights to access, correct, delete or restrict the processing of your personal data. To exercise these rights, contact us using the information below.</p>
+                    <h4 data-i18n="privacy.rights.title">Your Rights</h4>
+                    <p data-i18n="privacy.rights.body">Depending on your jurisdiction, you may have rights to access, correct, delete or restrict the processing of your personal data. To exercise these rights, contact us using the information below.</p>
 
-                    <h4>Security</h4>
-                    <p>We implement reasonable technical and organizational measures to protect data. However, no method of transmission over the internet or electronic storage is 100% secure.</p>
+                    <h4 data-i18n="privacy.security.title">Security</h4>
+                    <p data-i18n="privacy.security.body">We implement reasonable technical and organizational measures to protect data. However, no method of transmission over the internet or electronic storage is 100% secure.</p>
 
-                    <h4>Contact</h4>
-                    <p>If you have questions about this policy, contact us at: <a href="mailto:privacy@biztrack.example">privacy@biztrack.example</a></p>
+                    <h4 data-i18n="privacy.contact.title">Contact</h4>
+                    <p data-i18n="privacy.contact.body">If you have questions about this policy, contact us at:</p>
+                    <p><a href="mailto:privacy@biztrack.example">privacy@biztrack.example</a></p>
                 </article>
 
                 <footer>
-                    <p>&copy; 2026 BizTrack. All rights reserved.</p>
+                    <p data-i18n="privacy.footer">© 2026 BizTrack. All rights reserved.</p>
                 </footer>
             </section>
         </div>
