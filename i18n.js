@@ -133,7 +133,7 @@ const translations = {
     "feedback.expenseDeleted": "Expense {id} deleted successfully.",
     "feedback.expenseUpdated": "Expense {id} updated successfully.",
     "feedback.noExpenses": "No matching expenses found.",
-    "feedback.expensesExported": "Expenses exported to CSV."，
+    "feedback.expensesExported": "Expenses exported to CSV.",
     "privacy.title": "Privacy Policy",
     "privacy.introduction.title": "Introduction",
     "privacy.introduction.body": "This Privacy Policy explains how BizTrack collects, uses, discloses and safeguards your information when you visit our website.",
