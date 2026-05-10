@@ -261,7 +261,15 @@ function applyTranslations() {
   document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
 
   document.querySelectorAll("[data-i18n]").forEach((element) => {
-    element.textContent = t(element.dataset.i18n);
+    let params = {};
+    if (element.dataset.i18nParams) {
+      try {
+        params = JSON.parse(element.dataset.i18nParams);
+      } catch (e) {
+        params = {};
+      }
+    }
+    element.textContent = t(element.dataset.i18n, params);
   });
 
   document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
