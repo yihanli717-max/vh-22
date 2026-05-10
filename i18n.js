@@ -156,6 +156,8 @@ const translations = {
     "privacy.contact.title": "Contact",
     "privacy.contact.body": "If you have questions about this policy, contact us at:",
     "privacy.footer": "© 2026 BizTrack. All rights reserved.",
+    "cookie.text": "This website uses cookies to ensure you get the best experience.",
+    "cookie.accept": "Accept",
   },
   zh: {
     "language.label": "语言",
@@ -312,6 +314,8 @@ const translations = {
     "privacy.contact.title": "联系方式",
     "privacy.contact.body": "如对本政策有疑问，请通过以下方式与我们联系：",
     "privacy.footer": "© 2026 BizTrack。版权所有。",
+    "cookie.text": "本网站使用 Cookie，以确保您获得最佳体验。",
+    "cookie.accept": "接受",
   }
 };
 
